@@ -10,19 +10,19 @@ get_base_dir # Returns the directory path in $BD variable from where this *insta
 do_comm_job(){
 gclone "$BD/system" /
 geco "\n+ Backing up your current kernel zimage...."
-if [ -e "$OSROOT/rescue.kernel" ]; then
+if [ -e "$GRROOT/rescue.kernel" ]; then
   geco "+ Your stock kernel zimage is already backed up as rescue.kernel\n"
 else
-  mv $OSROOT/kernel $OSROOT/rescue.kernel
+  mv $GRROOT/kernel $GRROOT/rescue.kernel
   geco "+ Your stock kernel zimage is renamed from kernel to rescue.kernel\n"
 fi
-nout gclone "$BD/kernel" "$OSROOT"
-chmod 777 "$OSROOT/kernel"
+nout gclone "$BD/kernel" "$GRROOT"
+chmod 777 "$GRROOT/kernel"
 sleep 1.5
-geco "Your system will reboot after 20 seconds. ${RED}Read the information below!${RC}\n"
+geco "\n- Your system will reboot after 20 seconds. ${RED}Read the information below!${RC}\n"
 sleep 1
-geco "In case if your system is not booting with ${YELLOW}$Name-$Version${RC} on your hardware,"
-geco "then you can rename ${PURPLE}rescue.kernel${RC} to ${GREEN}kernel${RC} on your android_x86 partition to boot with your old kernel..."
+geco "\n- In case if your system is not booting with ${YELLOW}${NAME}-${VERSION}${RC} on your hardware,"
+geco "\n- then you can rename ${PURPLE}rescue.kernel${RC} to ${GREEN}kernel${RC} on your android_x86 partition to boot with your old kernel..."
 sleep 20
 }
 
@@ -35,21 +35,21 @@ while true; do
 		[Yy]* ) 
 				geco "\n+ Deleting /system/firmware"
 				rm -r /system/lib/firmware
-				geco "+ Placing the kernel modules and firmware files into your system"
+				geco "\n+ Placing the kernel modules and firmware files into your system"
 				do_comm_job
 break
 	 ;;
 	 
 		[Nn]* ) 
-				geco "\nPlacing the kernel modules files into your system"
+				geco "\n+ Placing the kernel modules files into your system"
 				do_comm_job
 break
 	 ;;
-	* ) geco "\nEnter either ${GREEN}y${RC}es or no" ;;
+	* ) geco "\n- Enter either ${GREEN}y${RC}es or no" ;;
 esac
 done
 
 else
-geco "+ Placing the kernel modules files into your system"
+geco "\n+ Placing the kernel modules files into your system"
 do_comm_job
 fi
