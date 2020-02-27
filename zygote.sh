@@ -36,6 +36,8 @@ GEN_UNINS="yes" #(Deafult - no) If you want GearLock to generate a uninstallatio
 
 SHOW_PROG="yes" #(Default - yes) Whether to show extraction progress while loading the pkg/extension
 
+DEF_HEADER="yes" #(Default -yes) Whether to use the default header which print's the info during zygote
+
 ######=============================== Package/Extension Functions ===============================######
 #######################################################################################################
 
@@ -48,24 +50,14 @@ SHOW_PROG="yes" #(Default - yes) Whether to show extraction progress while loadi
 
 
 #######################################################################################################
-######========================================== Banner =========================================######
-                          #Do not edit me unless you know what you're doing#
-geco "${BBLUE}\c"
-cat << EOF
-  ______   ______   ______   ______   ______   ______   ______   ______   ______   ______   ______   ______ 
- /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/ 
- 
-  ._.   ___                                                             
-  | |  / /   *Name: $NAME
-  |_|  \ \   *Version: $VERSION
-  |-|  < <   *Author: $AUTHOR
-  | |  / /   *Type: $TYPE
-  |_|  \_\_  *ShortDesc: $SHORTDESC
-  
-  ______   ______   ______   ______   ______   ______   ______   ______   ______   ______   ______   ______ 
- /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/ 
-EOF
-geco "${RC}\c"
+######======================================= CustomHeader ======================================######
+                        #Do not edit this part unless you know what you're doing#
+                #Set `DEF_HEADER` to `no' if you want to specify a custom zygote header#
+       #Then you can use `geco` or `cat` to print your custom header below for the zygote stage#
 
-######========================================== Banner =========================================######
+
+
+
+
+######========================================== Header =========================================######
 #######################################################################################################
