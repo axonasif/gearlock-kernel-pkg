@@ -9,7 +9,7 @@ get_base_dir # Returns the directory path in $BD variable from where this *insta
 
 do_comm_job(){
 gclone "$BD/system" /
-geco "\n+ Backing up your current kernel zimage...."
+geco "\n+ Backing up your current kernel zimage..."
 if [ -e "$GRROOT/rescue.kernel" ]; then
   geco "+ Your stock kernel zimage is already backed up as rescue.kernel\n"
 else
@@ -19,8 +19,7 @@ fi
 nout gclone "$BD/kernel" "$GRROOT"
 chmod 777 "$GRROOT/kernel"
 sleep 1.5
-geco "\n- Your system will reboot after 20 seconds. ${RED}Read the information below!${RC}\n"
-sleep 1
+geco "\n- Your system will reboot after 20 seconds. ${RED}Read the information below!${RC}"; sleep 1
 geco "\n- In case if your system is not booting with ${YELLOW}${NAME}-${VERSION}${RC} on your hardware,"
 geco "\n- then you can rename ${PURPLE}rescue.kernel${RC} to ${GREEN}kernel${RC} on your android_x86 partition to boot with your old kernel..."
 sleep 20
@@ -33,7 +32,7 @@ while true; do
 
 	case $c in
 		[Yy]* ) 
-				geco "\n+ Deleting /system/firmware"
+				geco "\n\n+ Deleting /system/firmware"
 				rm -r /system/lib/firmware
 				geco "\n+ Placing the kernel modules and firmware files into your system"
 				do_comm_job
