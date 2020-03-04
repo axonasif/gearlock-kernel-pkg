@@ -34,13 +34,13 @@ while true; do
 		[Yy]* ) 
 				geco "\n\n+ Deleting /system/firmware"
 				rm -r /system/lib/firmware
-				geco "\n+ Placing the kernel modules and firmware files into your system"
+				geco "\n+ Placing the kernel module and firmware files into your system"
 				do_comm_job
 break
 	 ;;
 	 
 		[Nn]* ) 
-				geco "\n+ Placing the kernel modules files into your system"
+				geco "\n+ Placing the kernel module files into your system"
 				do_comm_job
 break
 	 ;;
@@ -49,6 +49,6 @@ esac
 done
 
 else
-geco "\n+ Placing the kernel modules files into your system"
+geco "\n+ Placing the kernel module files into your system"
 do_comm_job
 fi
