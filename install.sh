@@ -9,7 +9,7 @@ get_base_dir # Returns the directory path in $BD variable from where this *insta
 
 do_comm_job(){
 	gclone "$BD/system" /
-	geco "\n+ Backing up your current kernel zimage..."
+	geco "\n+ Backing up your current kernel zimage"; sleep 1
 	if [ -e "$GRROOT/rescue.kernel" ]; then
 		geco "+ Your stock kernel zimage is already backed up as rescue.kernel\n"
 	else
