@@ -32,7 +32,7 @@ REQSYNC="yes" #Require Sync (Deafult - yes)
 
 REQREBOOT="yes" #(Deafult - no) Use if your package/extension modifies any major system file
 
-GEN_UNINS="yes" #(Deafult - no) If you want GearLock to generate a uninstallation script itself
+GEN_UNINS="yes" #(Deafult - yes) If you want GearLock to generate a uninstallation script itself
 
 SHOW_PROG="yes" #(Default - yes) Whether to show extraction progress while loading the pkg/extension
 
