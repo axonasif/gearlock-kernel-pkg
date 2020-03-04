@@ -9,4 +9,3 @@
 
 # If you want to also include `custom firmware` alongside the `kernel modules` then put the `firmware` folder into `system/lib`
 # Only include firmware files if you feel it's necessary or if you want to.
-
