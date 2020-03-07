@@ -1,4 +1,4 @@
-# GEN_UNIS function is enabled for this prebuild-kernel package (Check `zygote.sh`)
+# GEN_UNIS function is enabled for this prebuild-kernel package (Check `!zygote.sh`)
 # You don't need to modify this uninstall.sh
 
 if [ -e "$GRROOT/rescue.kernel" ]; then

@@ -1,7 +1,7 @@
 ## For proper develoer documentation, visit https://supreme-gamers.com/gearlock
 
 # This is a pre-build kernel installer package.
-# For configuring your package, check `zygote.sh` or gearlock can also guide you during the build process.
+# For configuring your package, check `!zygote.sh` or gearlock can also guide you during the build process.
 
 # Put the `kernel` zimage file in the rootdir of this package.
 

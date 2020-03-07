@@ -1,7 +1,7 @@
 ## Ready to use kernel script by @AXON
 ## For proper develoer documentation, visit https://supreme-gamers.com/gearlock
 
-# Check `zygote.sh` to configure your package functions or gearlock can also guide you during the build process
+# Check `!zygote.sh` to configure your package functions or gearlock can also guide you during the build process
 
 #####--- Import Functions ---#####
 get_base_dir # Returns the directory path in $BD variable from where this *install.sh is being executed
