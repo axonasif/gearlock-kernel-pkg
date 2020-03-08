@@ -19,7 +19,7 @@ do_comm_job(){
 	nout gclone "$BD/kernel" "$GRROOT"
 	chmod 777 "$GRROOT/kernel"
 	sleep 1.5
-	geco "\n- Your system will reboot after 20 seconds. ${RED}Read the information below!${RC}"; sleep 1; nout source "$BD"/'!zygote.sh'
+	geco "\n- Your system will reboot after 20 seconds. ${RED}Read the information below!${RC}"; sleep 1; source "$BD"/'!zygote.sh'
 	geco "\n- In case if your system is not booting with ${YELLOW}${NAME}-${VERSION}${RC} on your hardware,"
 	geco "\n- then you can rename ${PURPLE}rescue.kernel${RC} to ${GREEN}kernel${RC} on your android_x86 partition to boot with your old kernel..."; sleep 20
 	[ -d "$BD/system/lib/firmware" ] && rm -r "$BD/system/lib/firmware"
