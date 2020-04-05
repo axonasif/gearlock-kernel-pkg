@@ -2,7 +2,7 @@
 #######################################################################################################
 #####=============================== Package/Extension Information ===============================#####
 
-NAME="Linux Kernel" #Package/Extension Name
+NAME="Linux-Kernel" #Package/Extension Name
 
 TYPE="Package" #Specify (Package / Extension)
 
