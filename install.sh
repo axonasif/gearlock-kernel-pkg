@@ -30,7 +30,7 @@ if [ -d "$BD/system/lib/firmware" ]; then
 
 		case $c in
 			[Yy]* )
-				geco "\n+ Backing up stock firmware blobs ..."; cd /system/lib && nout garca a -m0=lzma2 -mx=3 $DEPDIR/firmware.bak firmware
+				geco "\n+ Backing up stock firmware blobs"; cd /system/lib && nout garca a -m0=lzma2 -mx=3 $DEPDIR/firmware.bak firmware
 				geco "\n+ Deleting /system/firmware" && rm -r /system/lib/firmware
 				geco "\n+ Placing the kernel module and firmware files into your system" && do_comm_job
 				break
