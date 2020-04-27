@@ -47,3 +47,7 @@ if [ -d "$BD/system/lib/firmware" ]; then
 else
 	geco "\n+ Placing the kernel module files into your system" && do_comm_job
 fi
+
+# Clear dalvik-cache
+	geco "\n+ Clearing dalvik-cache ..."
+	[ -d "/data/dalvik-cache" ] && rm -rf /data/dalvik-cache/*
