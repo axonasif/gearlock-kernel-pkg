@@ -6,6 +6,10 @@
 get_base_dir # Returns execution directory path in $BD variable
 #####--- Import Functions ---#####
 
+
+# Do not allow old GearLock versions (<6.0)
+if ! type check_compat > /dev/null 2>&1; then geco "\n\nInstallation can not continue, update to GearLock 6.0.1 in order to install this ..." && return 101; fi
+
 do_comm_job(){
 	gclone "$BD/system" /
 	geco "\n+ Backing up your current kernel zimage"; sleep 1
