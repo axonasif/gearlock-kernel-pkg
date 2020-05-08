@@ -1,5 +1,5 @@
 ## Ready to use kernel installation script by @AXON
-## For proper develoer documentation, visit https://supreme-gamers.com/gearlock
+## For proper developer documentation, visit https://supreme-gamers.com/gearlock
 # Check `!zygote.sh` to configure your package functions or gearlock can also guide you during the build process.
 
 #####--- Import Functions ---#####
@@ -7,23 +7,34 @@ get_base_dir # Returns execution directory path in $BD variable
 #####--- Import Functions ---#####
 
 
-# Do not allow old GearLock versions (6.0>)
-if ! type check_compat > /dev/null 2>&1; then geco "\n\nInstallation can not continue, update to GearLock 6.1 in order to install this ..." && return 101; fi
+# Do not allow old GearLock versions (5.9 & 6.0)
+if [ -n "$GEARLOCK_V" ] || [ -e "$CORE/version" ] && [ "$(cat $CORE/version)" = "6.0" ]; then
+	geco "\n\n!! Installation can not continue, update to ${BGREEN}GearLock 6.1+${RC} in order to install this ..." && sleep 8 && exit 1
+fi
 
 do_comm_job(){
+# Merge files
 	gclone "$BD/system" /
-	geco "\n+ Backing up your current kernel zimage"; sleep 1
-	if [ -e "$GRROOT/rescue.kernel" ]; then
-		geco "+ Your stock kernel zimage is already backed up as rescue.kernel\n"
+	
+# Backup kernel image
+	geco "\n+ Backing up your current kernel zimage" && sleep 1
+	if [ -e "${KERNEL_IMAGE}.rescue" ]; then
+		geco "+ Your stock kernel image is already backed up as ${KERNEL_IMAGE}.rescue"
 	else
-		mv $GRROOT/kernel $GRROOT/rescue.kernel
-		geco "+ Your stock kernel zimage is renamed from kernel to rescue.kernel\n"
+		mv "$KERNEL_IMAGE" "${KERNEL_IMAGE}.rescue"
+		geco "+ Your stock kernel image is renamed from $KERNEL_IMAGE to ${KERNEL_IMAGE}.rescue"
 	fi
-	rsync -a "$BD/kernel" "$GRROOT" && chmod 777 "$GRROOT/kernel" && sleep 1.5
-	geco "\n- Your system will reboot after 20 seconds. ${RED}Read the information below!${RC}"; sleep 1; source "$BD"/'!zygote.sh'
-	geco "\n- In case if your system is not booting with ${YELLOW}${NAME}-${VERSION}${RC} on your hardware,"
-	geco "\n- then you can rename ${PURPLE}rescue.kernel${RC} to ${GREEN}kernel${RC} on your android_x86 partition to boot with your old kernel ..."; sleep 20
-	# Cleanup package firmware if exists before gearlock gen_unins
+	
+# Merge new kernel image
+	rsync -a "$BD/kernel" "$KERNEL_IMAGE" && chmod 777 "$KERNEL_IMAGE" && sleep 1.5
+	
+# Print rescue information
+	geco "\n\n- ${RED}Read the information below and press ${RED}Enter${RC} to continue ...${RC}
+	- In case if you can't boot with ${YELLOW}${NAME}-${VERSION}${RC} on your hardware,
+	- then you can rename ${PURPLE}${KERNEL_IMAGE}.rescue${RC} to ${GREEN}$(basename "$KERNEL_IMAGE")${RC} on your android_x86 partition,
+	- or you can also uninstall ${YELLOW}${NAME}-${VERSION}${RC} from RECOVERY mode." && read EnterKey
+	
+# Cleanup package firmware before uninstallation script generation
 	[ -d "$BD/system/lib/firmware" ] && rm -r "$BD/system/lib/firmware"
 }
 
@@ -34,8 +45,8 @@ if [ -d "$BD/system/lib/firmware" ]; then
 
 		case $c in
 			[Yy]* )
-				geco "\n+ Backing up stock firmware blobs"; cd /system/lib && nout garca a -m0=lzma2 -mx=3 $DEPDIR/firmware.bak firmware
-				geco "\n+ Deleting /system/firmware" && rm -r /system/lib/firmware
+				geco "\n+ Backing up stock firmware blobs"; cd /system/lib && nout garca a -m0=lzma2 -mx=3 "$DEPDIR/firmware.bak" firmware
+				geco "\n+ Deleting /system/firmware" && rm -rf /system/lib/firmware
 				geco "\n+ Placing the kernel module and firmware files into your system" && do_comm_job
 				break
 				;;
@@ -44,7 +55,7 @@ if [ -d "$BD/system/lib/firmware" ]; then
 				geco "\n+ Placing the kernel module files into your system" && do_comm_job
 				break
 				;;
-			* ) geco "\n- Enter either ${GREEN}y${RC}es or no" ;;
+			* ) geco "\n- Enter either ${GREEN}Y${RC}es or no" ;;
 		esac
 	done
 

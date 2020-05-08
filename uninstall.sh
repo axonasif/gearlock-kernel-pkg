@@ -1,4 +1,4 @@
-## For proper develoer documentation, visit https://supreme-gamers.com/gearlock
+## For proper developer documentation, visit https://supreme-gamers.com/gearlock
 # GEN_UNIS function is enabled for this prebuild-kernel package (Check `!zygote.sh`)
 # You don't need to modify this uninstall.sh
 
