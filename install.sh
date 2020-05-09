@@ -17,7 +17,7 @@ fi
 do_comm_job(){
 # Merge files
 	gclone "$BD/system" /
-	
+
 # Backup kernel image
 	geco "\n+ Backing up your current kernel zimage" && sleep 1
 	if [ -e "${KERNEL_IMAGE}.rescue" ]; then
@@ -26,18 +26,18 @@ do_comm_job(){
 		mv "$KERNEL_IMAGE" "${KERNEL_IMAGE}.rescue"
 		geco "+ Your stock kernel image is renamed from ${PRINT_KERNEL_IMAGE} to ${PRINT_KERNEL_IMAGE}.rescue"
 	fi
-	
+
 # Merge new kernel image
 	rsync -a "$BD/kernel" "$KERNEL_IMAGE" && chmod 777 "$KERNEL_IMAGE" && sleep 1.5
-	
+
 # Print rescue information
-	geco "\n\n- Read the information below and press ${RED}Enter${RC} to continue ...${RC}
-	- In case if you can't boot with ${YELLOW}${NAME}-${VERSION}${RC} on your hardware,
-	- then you can rename ${PURPLE}${PRINT_KERNEL_IMAGE}.rescue${RC} to ${GREEN}${PRINT_KERNEL_IMAGE}${RC} on your android_x86 partition,
-	- or you can also uninstall ${YELLOW}${NAME}-${VERSION}${RC} from RECOVERY mode." && read EnterKey
-	
+geco "\n\n- Read the information below and press ${RED}Enter${RC} to continue ...${RC}
+-- In case if you can't boot with ${YELLOW}${NAME}-${VERSION}${RC} on your hardware,
+-- then you can rename ${PURPLE}${PRINT_KERNEL_IMAGE}.rescue${RC} to ${GREEN}${PRINT_KERNEL_IMAGE}${RC} on your android_x86 partition,
+-- or you can also uninstall ${YELLOW}${NAME}-${VERSION}${RC} from RECOVERY mode." && read EnterKey
+
 # Cleanup package firmware before uninstallation script generation
-	[ -d "$BD/system/lib/firmware" ] && rm -r "$BD/system/lib/firmware"
+	[ -d "$BD/system/lib/firmware" ] && rm -rf "$BD/system/lib/firmware"
 }
 
 if [ -d "$BD/system/lib/firmware" ]; then
@@ -66,5 +66,7 @@ else
 fi
 
 # Clear dalvik-cache
-	geco "\n+ Clearing dalvik-cache ..."
-	[ -d "/data/dalvik-cache" ] && rm -rf /data/dalvik-cache/*
+if [ -d "/data/dalvik-cache" ]; then
+	geco "\n+ Clearing dalvik-cache, it may take a bit long on your next boot ..."
+	rm -rf /data/dalvik-cache/*
+fi
