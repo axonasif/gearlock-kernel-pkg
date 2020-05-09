@@ -6,8 +6,10 @@
 get_base_dir # Returns execution directory path in $BD variable
 #####--- Import Functions ---#####
 
+# Define vars
+PRINT_KERNEL_IMAGE="$(basename ${KERNEL_IMAGE})"
 
-# Do not allow old GearLock versions (5.9 & 6.0)
+# Do not allow old GearLock versions (5.9 & 6.0) since there is lack of support
 if [ -n "$GEARLOCK_V" ] || [ -e "$CORE/version" ] && [ "$(cat $CORE/version)" = "6.0" ]; then
 	geco "\n\n!! Installation can not continue, update to ${BGREEN}GearLock 6.1+${RC} in order to install this ..." && sleep 8 && exit 1
 fi
@@ -19,19 +21,19 @@ do_comm_job(){
 # Backup kernel image
 	geco "\n+ Backing up your current kernel zimage" && sleep 1
 	if [ -e "${KERNEL_IMAGE}.rescue" ]; then
-		geco "+ Your stock kernel image is already backed up as ${KERNEL_IMAGE}.rescue"
+		geco "+ Your stock kernel image is already backed up as ${PRINT_KERNEL_IMAGE}.rescue"
 	else
 		mv "$KERNEL_IMAGE" "${KERNEL_IMAGE}.rescue"
-		geco "+ Your stock kernel image is renamed from $KERNEL_IMAGE to ${KERNEL_IMAGE}.rescue"
+		geco "+ Your stock kernel image is renamed from ${PRINT_KERNEL_IMAGE} to ${PRINT_KERNEL_IMAGE}.rescue"
 	fi
 	
 # Merge new kernel image
 	rsync -a "$BD/kernel" "$KERNEL_IMAGE" && chmod 777 "$KERNEL_IMAGE" && sleep 1.5
 	
 # Print rescue information
-	geco "\n\n- ${RED}Read the information below and press ${RED}Enter${RC} to continue ...${RC}
+	geco "\n\n- Read the information below and press ${RED}Enter${RC} to continue ...${RC}
 	- In case if you can't boot with ${YELLOW}${NAME}-${VERSION}${RC} on your hardware,
-	- then you can rename ${PURPLE}${KERNEL_IMAGE}.rescue${RC} to ${GREEN}$(basename "$KERNEL_IMAGE")${RC} on your android_x86 partition,
+	- then you can rename ${PURPLE}${PRINT_KERNEL_IMAGE}.rescue${RC} to ${GREEN}${PRINT_KERNEL_IMAGE}${RC} on your android_x86 partition,
 	- or you can also uninstall ${YELLOW}${NAME}-${VERSION}${RC} from RECOVERY mode." && read EnterKey
 	
 # Cleanup package firmware before uninstallation script generation
