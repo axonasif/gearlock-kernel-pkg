@@ -10,7 +10,7 @@ get_base_dir # Returns execution directory path in $BD variable
 PRINT_KERNEL_IMAGE="$(basename ${KERNEL_IMAGE})"
 
 # Do not allow old GearLock versions (5.9 & 6.0) since there is lack of support
-if [ -n "$GEARLOCK_V" ] || [ -e "$CORE/version" ] && (( $(echo "$(cat $CORE/version) == 6.0" | busybox bc -l) )); then
+if [ -n "$GEARLOCK_V" ] || [ ! -e "$CORE/version" ] || [ -e "$CORE/version" ] && (( $(echo "$(cat $CORE/version) == 6.0" | busybox bc -l) )); then
 	geco "\n\n!! Installation can not continue, update to ${BGREEN}GearLock 6.1+${RC} in order to install this ..." && sleep 8 && exit 1
 fi
 
