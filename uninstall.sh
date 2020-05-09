@@ -13,5 +13,7 @@ if [ -f "$DEPDIR/firmware.bak" ]; then
 fi
 
 # Clear dalvik-cache
-geco "\n+ Clearing dalvik-cache ..."
-[ -d "/data/dalvik-cache" ] && rm -rf /data/dalvik-cache/*
+if [ -d "/data/dalvik-cache" ]; then
+    geco "\n+ Clearing dalvik-cache, it may take a bit long on your next boot ..."
+    rm -rf /data/dalvik-cache/*
+fi
