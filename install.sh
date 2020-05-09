@@ -49,18 +49,12 @@ if [ -d "$BD/system/lib/firmware" ]; then
 			[Yy]* )
 				geco "\n+ Backing up stock firmware blobs"; cd /system/lib && nout garca a -m0=lzma2 -mx=3 "$DEPDIR/firmware.bak" firmware
 				geco "\n+ Deleting /system/firmware" && rm -rf /system/lib/firmware
-				geco "\n+ Placing the kernel module and firmware files into your system" && do_comm_job
-				break
-				;;
+				geco "\n+ Placing the kernel module and firmware files into your system" && do_comm_job; break ;;
 
-			[Nn]* )
-				geco "\n+ Placing the kernel module files into your system" && do_comm_job
-				break
-				;;
-			* ) geco "\n- Enter either ${GREEN}Y${RC}es or no" ;;
+			[Nn]* ) geco "\n+ Placing the kernel module files into your system" && do_comm_job; break ;;
+				* ) geco "\n- Enter either ${GREEN}Y${RC}es or no" ;;
 		esac
 	done
-
 else
 	geco "\n+ Placing the kernel module files into your system" && do_comm_job
 fi
