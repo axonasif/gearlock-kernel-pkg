@@ -38,10 +38,9 @@ do_comm_job(){
 	rsync "$BD/kernel" "$KERNEL_IMAGE" && sleep 1.5
 
 # Print rescue information
-geco "\n\n- Read the information below and press ${RED}Enter${RC} to continue ...${RC}
+geco "\n\n- Read the information below and press ${URED}Enter${RC} to continue ...${RC}
 -- In case if you can't boot with ${YELLOW}${NAME}-${VERSION}${RC} on your hardware,
--- then you can rename ${PURPLE}$PRINT_KERNEL_IMAGE.rescue${RC} to ${GREEN}$PRINT_KERNEL_IMAGE${RC} on your android_x86 partition,
--- or you can also uninstall ${YELLOW}${NAME}-${VERSION}${RC} from RECOVERY mode." && read EnterKey
+-- then you can uninstall ${YELLOW}${NAME}-${VERSION}${RC} from RECOVERY mode." && read EnterKey
 
 # Cleanup package firmware before uninstallation script generation
 	[ -d "$BD/system/lib/firmware" ] && rm -rf "$BD/system/lib/firmware"

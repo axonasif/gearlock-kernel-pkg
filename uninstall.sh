@@ -15,7 +15,7 @@ if [ -f "$DEPDIR/firmware.bak" ]; then
     nout garca x -aoa -o/system/lib "$DEPDIR/firmware.bak" && rm "$DEPDIR/firmware.bak"
 fi
 
-# Move/clean current module dir if necessary (to avoid module mismatch by android init)
+# Restore old module dir
 if [ -d "$KMODDIR.old" ]; then
     geco "\n+ Restoring stock kernel modules ..."
     rm -rf "$KMODDIR" && mv "$KMODDIR.old" "$KMODDIR"
