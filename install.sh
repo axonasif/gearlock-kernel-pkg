@@ -7,7 +7,7 @@ get_base_dir # Returns execution directory path in $BD variable
 #####--- Import Functions ---#####
 
 # Define vars
-PRINT_KERNEL_IMAGE="$(basename ${KERNEL_IMAGE})"
+PRINT_KERNEL_IMAGE="$(basename $KERNEL_IMAGE)"
 
 # Do not allow old GearLock versions (5.9 & 6.0) since there is lack of support
 if [ -n "$GEARLOCK_V" ] || [ ! -e "$CORE/version" ] || [ -e "$CORE/version" ] && (( $(echo "$(cat $CORE/version) 6.0" | awk '{print ($1 == $2)}') )); then
@@ -16,11 +16,10 @@ fi
 
 do_comm_job(){
 # Move/clean current module dir if necessary (to avoid module mismatch by android init)
-	MODDIR="/system/lib/modules"
-	if [ ! -d "$MODDIR.old" ]; then
-		mv "$MODDIR" "$MODDIR.old" && ckdirex "$MODDIR" 755
-	elif [ -d "$MODDIR.old" -a -d "$MODDIR" ]; then
-		rm -rf "$MODDIR" && ckdirex "$MODDIR" 755
+	if [ ! -d "$KMODDIR.old" ]; then
+		mv "$KMODDIR" "$KMODDIR.old" && ckdirex "$KMODDIR" 755
+	elif [ -d "$KMODDIR.old" -a -d "$KMODDIR" ]; then
+		rm -rf "$KMODDIR" && ckdirex "$KMODDIR" 755
 	fi
 
 # Merge files
@@ -28,11 +27,11 @@ do_comm_job(){
 
 # Backup kernel image
 	geco "\n+ Backing up your current kernel zimage" && sleep 1
-	if [ -e "${KERNEL_IMAGE}.rescue" ]; then
-		geco "+ Your stock kernel image is already backed up as ${PRINT_KERNEL_IMAGE}.rescue"
+	if [ -e "$KERNEL_IMAGE.rescue" ]; then
+		geco "+ Your stock kernel image is already backed up as $PRINT_KERNEL_IMAGE.rescue"
 	else
-		mv "$KERNEL_IMAGE" "${KERNEL_IMAGE}.rescue"
-		geco "+ Your stock kernel image is renamed from ${PRINT_KERNEL_IMAGE} to ${PRINT_KERNEL_IMAGE}.rescue"
+		mv "$KERNEL_IMAGE" "$KERNEL_IMAGE.rescue"
+		geco "+ Your stock kernel image is renamed from $PRINT_KERNEL_IMAGE to $PRINT_KERNEL_IMAGE.rescue"
 	fi
 
 # Merge new kernel image
@@ -41,7 +40,7 @@ do_comm_job(){
 # Print rescue information
 geco "\n\n- Read the information below and press ${RED}Enter${RC} to continue ...${RC}
 -- In case if you can't boot with ${YELLOW}${NAME}-${VERSION}${RC} on your hardware,
--- then you can rename ${PURPLE}${PRINT_KERNEL_IMAGE}.rescue${RC} to ${GREEN}${PRINT_KERNEL_IMAGE}${RC} on your android_x86 partition,
+-- then you can rename ${PURPLE}$PRINT_KERNEL_IMAGE.rescue${RC} to ${GREEN}$PRINT_KERNEL_IMAGE${RC} on your android_x86 partition,
 -- or you can also uninstall ${YELLOW}${NAME}-${VERSION}${RC} from RECOVERY mode." && read EnterKey
 
 # Cleanup package firmware before uninstallation script generation

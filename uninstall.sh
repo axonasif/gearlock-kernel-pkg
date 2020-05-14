@@ -4,9 +4,9 @@
 
 
 # Restore stock kernel image
-if [ -f "${KERNEL_IMAGE}.rescue" ]; then
+if [ -f "$KERNEL_IMAGE.rescue" ]; then
     geco "\n+ Restoring stock kernel image ..." && sleep 1
-    mv "${KERNEL_IMAGE}.rescue" "$KERNEL_IMAGE"
+    mv "$KERNEL_IMAGE.rescue" "$KERNEL_IMAGE"
 fi
 
 # Restore backed up firmware blobs
@@ -16,10 +16,9 @@ if [ -f "$DEPDIR/firmware.bak" ]; then
 fi
 
 # Move/clean current module dir if necessary (to avoid module mismatch by android init)
-MODDIR="/system/lib/modules"
-if [ -d "$MODDIR.old" ]; then
+if [ -d "$KMODDIR.old" ]; then
     geco "\n+ Restoring stock kernel modules ..."
-    rm -rf "$MODDIR" && mv "$MODDIR.old" "$MODDIR"
+    rm -rf "$KMODDIR" && mv "$KMODDIR.old" "$KMODDIR"
 fi
 
 # Clear dalvik-cache
