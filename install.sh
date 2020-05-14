@@ -28,7 +28,7 @@ do_comm_job(){
 	fi
 
 # Merge new kernel image
-	rsync "$BD/kernel" "$KERNEL_IMAGE" && chmod 777 "$KERNEL_IMAGE" && sleep 1.5
+	rsync "$BD/kernel" "$KERNEL_IMAGE" && sleep 1.5
 
 # Print rescue information
 geco "\n\n- Read the information below and press ${RED}Enter${RC} to continue ...${RC}
