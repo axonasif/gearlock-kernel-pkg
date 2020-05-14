@@ -15,6 +15,14 @@ if [ -n "$GEARLOCK_V" ] || [ ! -e "$CORE/version" ] || [ -e "$CORE/version" ] &&
 fi
 
 do_comm_job(){
+# Move/clean current module dir if necessary (to avoid module mismatch by android init)
+	MODDIR="/system/lib/modules"
+	if [ ! -d "$MODDIR.old" ]; then
+		mv "$MODDIR" "$MODDIR.old" && ckdirex "$MODDIR" 755
+	elif [ -d "$MODDIR.old" -a -d "$MODDIR" ]; then
+		rm -rf "$MODDIR" && ckdirex "$MODDIR" 755
+	fi
+
 # Merge files
 	gclone "$BD/system" /
 

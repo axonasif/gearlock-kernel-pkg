@@ -2,6 +2,7 @@
 # Auto uninstallation generation is enabled for this prebuild-kernel package (Check `!zygote.sh`)
 # You don't need to modify this uninstall.sh
 
+
 # Restore stock kernel image
 if [ -f "${KERNEL_IMAGE}.rescue" ]; then
     geco "\n+ Restoring stock kernel image ..." && sleep 1
@@ -12,6 +13,13 @@ fi
 if [ -f "$DEPDIR/firmware.bak" ]; then
     geco "\n+ Restoring stock firmware blobs ..."
     nout garca x -aoa -o/system/lib "$DEPDIR/firmware.bak" && rm "$DEPDIR/firmware.bak"
+fi
+
+# Move/clean current module dir if necessary (to avoid module mismatch by android init)
+MODDIR="/system/lib/modules"
+if [ -d "$MODDIR.old" ]; then
+    geco "\n+ Restoring stock kernel modules ..."
+    rm -rf "$MODDIR" && mv "$MODDIR.old" "$MODDIR"
 fi
 
 # Clear dalvik-cache
