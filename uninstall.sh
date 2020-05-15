@@ -2,6 +2,9 @@
 # Auto uninstallation generation is enabled for this prebuild-kernel package (Check `!zygote.sh`)
 # You don't need to modify this uninstall.sh
 
+# Define vars
+KMODDIR="/system/lib/modules"
+FIRMDIR="/system/firmware"
 
 # Restore stock kernel image
 if [ -f "$KERNEL_IMAGE.rescue" ]; then
@@ -9,17 +12,13 @@ if [ -f "$KERNEL_IMAGE.rescue" ]; then
     mv "$KERNEL_IMAGE.rescue" "$KERNEL_IMAGE"
 fi
 
-# Restore backed up firmware blobs
-if [ -f "$DEPDIR/firmware.bak" ]; then
-    geco "\n+ Restoring stock firmware blobs ..."
-    nout garca x -aoa -o/system/lib "$DEPDIR/firmware.bak" && rm "$DEPDIR/firmware.bak"
-fi
-
-# Restore old module dir
-if [ -d "$KMODDIR.old" ]; then
-    geco "\n+ Restoring stock kernel modules ..."
-    rm -rf "$KMODDIR" && mv "$KMODDIR.old" "$KMODDIR"
-fi
+# Restore stock module/firmware dir
+for tget in "$KMODDIR" "$FIRMDIR"; do
+    if [ -d "$tget.old" ]; then
+        geco "\n+ Restoring stock "$(basename "$tget")" ..."
+        rm -rf "$tget" && mv "$tget.old" "$tget"
+    fi
+done
 
 # Clear dalvik-cache
 if [ -d "/data/dalvik-cache" ]; then
