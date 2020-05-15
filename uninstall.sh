@@ -4,7 +4,7 @@
 
 # Define vars
 KMODDIR="/system/lib/modules"
-FIRMDIR="/system/firmware"
+FIRMDIR="/system/lib/firmware"
 
 # Restore stock kernel image
 if [ -f "$KERNEL_IMAGE.rescue" ]; then

@@ -11,7 +11,7 @@ get_base_dir # Returns execution directory path in $BD variable
 PKG_KERNEL_IMAGE="$BD/kernel"
 PRINT_KERNEL_IMAGE="$(basename $KERNEL_IMAGE)"
 KMODDIR="/system/lib/modules"
-FIRMDIR="/system/firmware"
+FIRMDIR="/system/lib/firmware"
 
 # Do not allow old GearLock versions (5.9 & 6.0) since there is lack of support
 if [ -n "$GEARLOCK_V" ] || [ ! -e "$CORE/version" ] || [ -e "$CORE/version" ] && (( $(echo "$(cat $CORE/version) 6.0" | awk '{print ($1 == $2)}') )); then
