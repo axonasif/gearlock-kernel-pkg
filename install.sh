@@ -15,7 +15,7 @@ FIRMDIR="/system/lib/firmware"
 
 # Do not allow old GearLock versions (5.9 & 6.0) since there is lack of support
 if [ -n "$GEARLOCK_V" ] || [ ! -e "$CORE/version" ] || [ -e "$CORE/version" ] && (( $(echo "$(cat $CORE/version) 6.0" | awk '{print ($1 == $2)}') )); then
-	geco "\n\n!! Installation can not continue, update to ${BGREEN}GearLock 6.1+${RC} in order to install this ..." && sleep 8 && exit 1
+	geco "\n\n!! Installation can not continue, update ${BGREEN}GearLock${RC} in order to install this ..." && sleep 8 && exit 1
 fi
 
 do_comm_job(){
