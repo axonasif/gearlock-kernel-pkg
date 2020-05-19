@@ -1,5 +1,5 @@
 ## For proper developer documentation, visit https://supreme-gamers.com/gearlock
-# Auto uninstallation generation is enabled for this prebuild-kernel package (Check `!zygote.sh`)
+# Auto uninstallation generation is disabled for this prebuild-kernel package (Check `!zygote.sh`)
 # You don't need to modify this uninstall.sh
 
 # Define vars
