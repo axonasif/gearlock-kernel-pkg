@@ -9,27 +9,31 @@ get_base_dir # Returns execution directory path in $BD variable
 
 # Define vars
 PKG_KERNEL_IMAGE="$BD/kernel"
-PRINT_KERNEL_IMAGE="$(basename $KERNEL_IMAGE)"
 KMODDIR="/system/lib/modules"
 FIRMDIR="/system/lib/firmware"
+DALVIKDIR="/data/dalvik-cache"
+PRINT_KERNEL_IMAGE="$(basename "$KERNEL_IMAGE")"
 
 # Do not allow old GearLock versions (5.9 & 6.0) since there is lack of support
 if [ -n "$GEARLOCK_V" ] || [ ! -e "$CORE/version" ] || [ -e "$CORE/version" ] && (( $(echo "$(cat $CORE/version) 6.0" | awk '{print ($1 == $2)}') )); then
-	geco "\n\n!! Installation can not continue, update ${BGREEN}GearLock${RC} in order to install this ..." && sleep 8 && exit 1
+	geco "\n++++ Error: Update ${BGREEN}GearLock${RC} to install this ..." && sleep 8 && exit 101
 fi
 
+# Make sure KERNEL_IMAGE exist
+[ -z "$KERNEL_IMAGE" -o ! -e "$KERNEL_IMAGE" ] && geco "\n++++ Error: Kernel image is not accessible" && exit 101
+
 do_comm_job(){
-# Move/clean current module & firmware dir if necessary (to avoid module mismatch by android init)
-	for tget in "$KMODDIR" "$FIRMDIR"; do
-		if [ ! -d "$tget.old" ]; then
-			mv "$tget" "$tget.old" && ckdirex "$tget" 755
-		elif [ -d "$tget.old" -a -d "$tget" ]; then
-			rm -rf "$tget" && ckdirex "$tget" 755
+# Move/clean current modules & firmware dir if necessary (to avoid module mismatch by android init)
+	for tget in $@; do
+		if [ ! -d $tget.old ]; then
+			mv $tget $tget.old && ckdirex $tget 755
+		elif [ -d $tget.old -a -d $tget ]; then
+			rm -rf $tget && ckdirex $tget 755
 		fi
 	done
 
 # Merge files
-	gclone "$BD/system" /
+	gclone "$BD/system" / || geco "\n++++ Error: Failed to place files" && exit 101
 
 # Backup kernel image
 	geco "\n+ Backing up your current kernel zimage" && sleep 1
@@ -48,27 +52,28 @@ geco "\n\n- Read the information below and press ${URED}Enter${RC} to continue .
 -- In case if you can't boot with ${YELLOW}${NAME}-${VERSION}${RC} on your hardware,
 -- then you can uninstall ${YELLOW}${NAME}-${VERSION}${RC} from RECOVERY mode." && read EnterKey
 
-# Cleanup package firmware before uninstallation script generation
-	[ -d "$BD/system/lib/firmware" ] && rm -rf "$BD/system/lib/firmware"
+# # Cleanup package firmware before uninstallation script generation
+# # Only required when auto GEN_UNINS is enabled, deprecieated since GearLock 6.0
+# 	[ -d "$BD$FIRMDIR" ] && rm -rf "$BD$FIRMDIR"
 }
 
 # Runtime
 if [ -d "$BD/system/lib/firmware" ]; then
 	geco "This kernel package also provides additional firmware."
 	while true; do
-		read -n1 -p "$(geco "Do you want to upgrade the ${BLUE}firmware${RC} through this kernel package? [${GREEN}Y${RC}/n]") " c
-		case $c in
-			[Yy]* ) geco "\n+ Deleting /system/firmware\n+ Placing the kernel module and firmware files into your system" && do_comm_job; break ;;
-			[Nn]* ) geco "\n+ Placing the kernel module files into your system" && do_comm_job; break ;;
-				* ) geco "\n- Enter either ${GREEN}Y${RC}es or no" ;;
+		read -n1 -p "$(geco "Do you want to upgrade the ${BLUE}firmware${RC} through this kernel package? [${GREEN}Y${RC}/n]") " i
+		case $i in
+			[Yy] ) geco "\n+ Placing the kernel module and firmware files into your system" && do_comm_job $KMODDIR $FIRMDIR; break ;;
+			[Nn] ) geco "\n+ Placing the kernel module files into your system" && do_comm_job $KMODDIR; break ;;
+				*) geco "\n- Enter either ${GREEN}Y${RC}es or no" ;;
 		esac
 	done
 else
-	geco "\n+ Placing the kernel module files into your system" && do_comm_job
+	geco "\n+ Placing the kernel module files into your system" && do_comm_job $KMODDIR
 fi
 
 # Clear dalvik-cache
-if [ -d "/data/dalvik-cache" ]; then
+if [ -d "$DALVIKDIR" ]; then
 	geco "\n+ Clearing dalvik-cache, it may take a bit long on your next boot ..."
-	rm -rf /data/dalvik-cache/*
+	rm -rf $DALVIKDIR/*
 fi
