@@ -48,7 +48,7 @@ do_comm_job(){
 	rsync "$PKG_KERNEL_IMAGE" "$KERNEL_IMAGE" || geco "\n++++ Error: Failed to update kernel image" && exit 101
 
 # Print rescue information
-geco "\n\n- Read the information below and press ${URED}Enter${RC} to continue ...${RC}
+geco "\n\n- Read the information below and press ${RED}${URED}Enter${RC} to continue ...${RC}
 -- In case if you can't boot with ${YELLOW}${NAME}-${VERSION}${RC} on your hardware,
 -- then you can uninstall ${YELLOW}${NAME}-${VERSION}${RC} from RECOVERY mode." && read EnterKey
 
