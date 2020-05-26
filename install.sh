@@ -45,7 +45,7 @@ do_comm_job(){
 	fi
 
 # Merge new kernel image
-	rsync "$PKG_KERNEL_IMAGE" "$KERNEL_IMAGE" && sleep 1.5
+	rsync "$PKG_KERNEL_IMAGE" "$KERNEL_IMAGE" || geco "\n++++ Error: Failed to update kernel image" && exit 101
 
 # Print rescue information
 geco "\n\n- Read the information below and press ${URED}Enter${RC} to continue ...${RC}
