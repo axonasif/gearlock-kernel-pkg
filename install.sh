@@ -31,7 +31,7 @@ doJob ()
 test -n "$KERNEL_IMAGE" -a -e "$KERNEL_IMAGE"; handleError "Kernel image is not accessible"
 
 # Merge files
-	gclone "$BD/system" /; handleError "Failed to place files"
+	gclone "$BD/system/" "$SYSTEM_DIR"; handleError "Failed to place files"
 
 # Backup kernel image
 	geco "\n+ Backing up your current kernel image: \c" && sleep 1
