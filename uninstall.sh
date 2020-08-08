@@ -5,21 +5,29 @@
 # Define variables
 FIRMDIR="/system/lib/firmware"
 DALVIKDIR="/data/dalvik-cache"
+RESCUE_KERNEL_IMAGE="$GRROOT/rescue-kernel"
 
 # Define functions
-printError(){ test $? != 0 && geco "\n++++ Error: $@" && return ${2:-101}; }
+handleError ()
+{ 
+	if [ $? != 0 ]; then
+		# Revert back any incomplete changes
+		test ! -e "$FIRMDIR" -a -e "$FIRMDIR.old" && mv "$FIRMDIR.old" "$FIRMDIR"
+		test ! -e "$KERNEL_IMAGE" -a -e "$RESCUE_KERNEL_IMAGE" && mv "$RESCUE_KERNEL_IMAGE" "$KERNEL_IMAGE"
+		geco "\n++++ Error: $1" && exit ${2:-101}
+	fi
+}
 
-## Runtime
 # Restore stock kernel image
-if [ -f "rescue-$KERNEL_IMAGE" ]; then
+if [ -f "$RESCUE_KERNEL_IMAGE" ]; then
 	geco "\n+ Restoring stock kernel image ..." && sleep 1
-	mv "rescue-$KERNEL_IMAGE" "$KERNEL_IMAGE"; printError "Failed to restore stock kernel image"
+	nout mv "$RESCUE_KERNEL_IMAGE" "$KERNEL_IMAGE"; handleError "Failed to restore stock kernel image"
 fi
 
 # Restore stock modules/firmware dir
 if [ -d "$FIRMDIR.old" ]; then
 	geco "\n+ Restoring stock "$(basename "$FIRMDIR")" ..."
-	rm -rf "$FIRMDIR" && mv "$FIRMDIR.old" "$FIRMDIR"; printError "Failed to restore stock "$(basename "$FIRMDIR")""
+	nout rm -rf "$FIRMDIR" && mv "$FIRMDIR.old" "$FIRMDIR"; handleError "Failed to restore stock "$(basename "$FIRMDIR")""
 fi
 
 # Clear dalvik-cache

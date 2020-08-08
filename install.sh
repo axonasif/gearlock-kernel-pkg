@@ -11,56 +11,65 @@ get_base_dir # Returns execution directory path in $BD variable
 FIRMDIR="/system/lib/firmware"
 DALVIKDIR="/data/dalvik-cache"
 PKG_KERNEL_IMAGE="$BD/kernel"
-PRINT_KERNEL_IMAGE="$(basename "$KERNEL_IMAGE")"
-
+RESCUE_KERNEL_IMAGE="$GRROOT/rescue-kernel"
 
 # Define functions
-printError(){ test $? != 0 && geco "\n++++ Error: $@" && exit ${2:-101}; }
+handleError ()
+{ 
+	if [ $? != 0 ]; then
+		# Revert back any incomplete changes
+		test ! -e "$FIRMDIR" -a -e "$FIRMDIR.old" && mv "$FIRMDIR.old" "$FIRMDIR"
+		test ! -e "$KERNEL_IMAGE" -a -e "$RESCUE_KERNEL_IMAGE" && mv "$RESCUE_KERNEL_IMAGE" "$KERNEL_IMAGE"
+		geco "\n++++ Error: $1" && exit ${2:-101}
+	fi
+}
+
 doJob ()
 {
 
 # Make sure KERNEL_IMAGE exist and is accessible
-test -z "$KERNEL_IMAGE" -o ! -e "$KERNEL_IMAGE"; printError "Kernel image is not accessible"
+test -n "$KERNEL_IMAGE" -a -e "$KERNEL_IMAGE"; handleError "Kernel image is not accessible"
 
 # Merge files
-	gclone "$BD/system" /; printError "Failed to place files"
+	gclone "$BD/system" /; handleError "Failed to place files"
 
 # Backup kernel image
-	geco "\n+ Backing up your current kernel image" && sleep 1
-	if [ -e "rescue-$KERNEL_IMAGE" ]; then
-		geco "+ Your stock kernel image is already backed up as rescue-$PRINT_KERNEL_IMAGE"
+	geco "\n+ Backing up your current kernel image: \c" && sleep 1
+	if [ -e "$RESCUE_KERNEL_IMAGE" ]; then
+		geco "Already backed up as $(basename "$RESCUE_KERNEL_IMAGE")"
 	else
-		nout mv "$KERNEL_IMAGE" "rescue-$KERNEL_IMAGE"; printError "Failed to backup stock kernel image"
-		geco "+ Your stock kernel image is renamed from $PRINT_KERNEL_IMAGE to rescue-$PRINT_KERNEL_IMAGE"
+        nout mv "$KERNEL_IMAGE" "$RESCUE_KERNEL_IMAGE"; handleError "Failed to backup stock kernel image"
+		geco "Renamed from $(basename "$KERNEL_IMAGE") to $(basename "$RESCUE_KERNEL_IMAGE")"
 	fi
 
 # Merge new kernel image
-	nout rsync "$PKG_KERNEL_IMAGE" "$KERNEL_IMAGE"; printError "Failed to update kernel image"
+	nout rsync "$PKG_KERNEL_IMAGE" "$KERNEL_IMAGE"; handleError "Failed to update kernel image"
 
 # Print rescue information
 geco "
-\n- Read the information below and press ${BRED}${URED}Enter${RC} to continue ...${RC}
+\n- ${BRED}${URED}Read the information below${RC}
 -- In case if you can't boot with ${YELLOW}${NAME}-${VERSION}${RC} on your hardware,
 -- then you can uninstall ${YELLOW}${NAME}-${VERSION}${RC} from RECOVERY mode.
--- You can also rename ${PURPLE}kernel-rescue${RC} to $KERNEL_IMAGE,
--- in your android-x86 partition to boot with old kernel.
-\c" && read EnterKey
+-- You can also rename ${PURPLE}$(basename "$RESCUE_KERNEL_IMAGE")${RC} to $(basename "$KERNEL_IMAGE"),
+-- in your android-x86 partition in order to boot with stock kernel.
+- Note: To purge old kernel modules, use ${GREEN}GearLock > Game / System Tweaks${RC} 
+\c"
 
 # Cleanup package firmware before uninstallation script generation (GEN_UNINS)
 test -d "$BD$FIRMDIR" && rm -r "$BD$FIRMDIR"
 
 }
 
-# Runtime
-if [ -d "$BD$FRIMDIR" ]; then
+# Main Loop
+if [ -d "$BD$FIRMDIR" ]; then
 	geco "This kernel package also provides additional firmware."
 	while true; do
 		read -n1 -p "$(geco "Do you want to upgrade the ${BLUE}firmware${RC} through this kernel package? [${GREEN}Y${RC}/n]") " i
 		case $i in
-			[Yy] ) geco "\n+ Placing the kernel module and firmware files into your system"
-					nout mv "$FRIMDIR" "$FRIMDIR.old"; printError "Failed to backup old firmware"; doJob; break ;;
-			[Nn] ) geco "\n+ Placing the kernel module files into your system"
-					rm -r "$BD$FRIMDIR" && doJob; break ;;
+			[Yy] ) geco "\n\n+ Placing the kernel module and firmware files into your system"
+					nout mv "$FIRMDIR" "$FIRMDIR.old"; handleError "Failed to backup old firmware"; doJob; break ;;
+			[Nn] ) geco "\n\n+ Placing the kernel module files into your system"
+					rm -r "$BD$FIRMDIR" && doJob; break ;;
 				*) geco "\n- Enter either ${GREEN}Y${RC}es or no" ;;
 		esac
 	done
