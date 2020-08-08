@@ -8,21 +8,19 @@ get_base_dir # Returns execution directory path in $BD variable
 #####--- Import Functions ---#####
 
 # Define vars
-PKG_KERNEL_IMAGE="$BD/kernel"
 KMODDIR="/system/lib/modules"
 FIRMDIR="/system/lib/firmware"
 DALVIKDIR="/data/dalvik-cache"
+PKG_KERNEL_IMAGE="$BD/kernel"
 PRINT_KERNEL_IMAGE="$(basename "$KERNEL_IMAGE")"
 
-# Do not allow old GearLock versions (5.9 & 6.0) since there is lack of support
-if [ -n "$GEARLOCK_V" ] || [ ! -e "$CORE/version" ] || [ -e "$CORE/version" ] && (( $(echo "$(cat $CORE/version) 6.0" | awk '{print ($1 == $2)}') )); then
-	geco "\n++++ Error: Update ${BGREEN}GearLock${RC} to install this ..." && sleep 8 && exit 101
-fi
 
-# Make sure KERNEL_IMAGE exist
+# Make sure KERNEL_IMAGE exist and is accessible
 [ -z "$KERNEL_IMAGE" -o ! -e "$KERNEL_IMAGE" ] && geco "\n++++ Error: Kernel image is not accessible" && exit 101
 
-do_comm_job(){
+do_comm_job ()
+{
+
 # Move/clean current modules & firmware dir if necessary (to avoid module mismatch by android init)
 	for tget in $@; do
 		if [ ! -d $tget.old ]; then
@@ -40,7 +38,7 @@ do_comm_job(){
 	if [ -e "$KERNEL_IMAGE.rescue" ]; then
 		geco "+ Your stock kernel image is already backed up as $PRINT_KERNEL_IMAGE.rescue"
 	else
-		mv "$KERNEL_IMAGE" "$KERNEL_IMAGE.rescue"
+		mv "$KERNEL_IMAGE" "$KERNEL_IMAGE.rescue" || geco "\n++++ Error: Failed to backup stock kernel image" && exit 101
 		geco "+ Your stock kernel image is renamed from $PRINT_KERNEL_IMAGE to $PRINT_KERNEL_IMAGE.rescue"
 	fi
 
@@ -54,7 +52,8 @@ geco "\n\n- Read the information below and press ${RED}${URED}Enter${RC} to cont
 
 # # Cleanup package firmware before uninstallation script generation
 # # Only required when auto GEN_UNINS is enabled, deprecieated since GearLock 6.0
-# 	[ -d "$BD$FIRMDIR" ] && rm -rf "$BD$FIRMDIR"
+# [ -d "$BD$FIRMDIR" ] && rm -rf "$BD$FIRMDIR"
+
 }
 
 # Runtime
@@ -73,7 +72,4 @@ else
 fi
 
 # Clear dalvik-cache
-if [ -d "$DALVIKDIR" ]; then
-	geco "\n+ Clearing dalvik-cache, it may take a bit long on your next boot ..."
-	rm -rf $DALVIKDIR/*
-fi
+[ -d "$DALVIKDIR" ] && geco "\n+ Clearing dalvik-cache, it may take a bit long on your next boot ..." && rm -rf $DALVIKDIR/*

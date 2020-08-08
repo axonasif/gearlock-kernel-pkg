@@ -22,7 +22,4 @@ for tget in $KMODDIR $FIRMDIR; do
 done
 
 # Clear dalvik-cache
-if [ -d "$DALVIKDIR" ]; then
-	geco "\n+ Clearing dalvik-cache, it may take a bit long on your next boot ..."
-	rm -rf $DALVIKDIR/*
-fi
+[ -d "$DALVIKDIR" ] && geco "\n+ Clearing dalvik-cache, it may take a bit long on your next boot ..." && rm -rf $DALVIKDIR/*
