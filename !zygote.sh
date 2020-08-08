@@ -28,11 +28,11 @@ C_EXTNAME="" #For Specifing a custom name for your extension script ($NAME is us
 #######################################################################################################
 ######=============================== Package/Extension Functions ===============================######
 
-REQSYNC="yes" #Require Sync (Deafult - yes)
+REQSYNC="yes" #(Deafult - yes) To make sure all your files are properly written in disk
 
 REQREBOOT="yes" #(Deafult - no) Use if your package/extension modifies any major system file
 
-GEN_UNINS="no" #(Deafult - yes) If you want GearLock to generate a uninstallation script itself
+GEN_UNINS="yes" #(Deafult - yes) If you want GearLock to generate a uninstallation script itself
 
 SHOW_PROG="yes" #(Default - yes) Whether to show extraction progress while loading the pkg/extension
 
