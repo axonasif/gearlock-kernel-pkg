@@ -27,7 +27,7 @@ if [ "$GEARLOCK_APP" == "yes" ]; then
 		read -n1 -p "$(geco "Do you want to switch to ${BGREEN}tty${RC} and uninstall from there ? [${GREEN}Y${RC}/n]") " i
 		case $i in
 			[Yy] ) geco "\n\n+ Switching to tty GearLock ..." && sleep 1
-					openvt -s "$GRLBASE"/bin/bash gearlock-cli main.src/1; gkillapp "$GAPPID"; break ;;
+					openvt -s bash gearlock-cli main.src/1; gkillapp "$GAPPID"; break ;;
 			[Nn] ) geco "\n\n+ Okay, uninstallation process will exit"
 					return 101; break ;;
 				*) geco "\n- Enter either ${GREEN}Y${RC}es or no" ;;
