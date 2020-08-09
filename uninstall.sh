@@ -19,6 +19,22 @@ handleError ()
 	fi
 }
 
+# Deny uninstallation from GUI to avoid system crash
+if [ "$GEARLOCK_APP" == "yes" ]; then
+	geco "\n+ You can not uninstall kernel from GUI, it will crash your system"
+	while true
+	do
+		read -n1 -p "$(geco "Do you want to switch to ${BGREEN}tty${RC} and uninstall from there ? [${GREEN}Y${RC}/n]") " i
+		case $i in
+			[Yy] ) geco "\n\n+ Switching to tty GearLock ..." && sleep 1
+					openvt -s "$GRLBASE"/bin/bash gearlock-cli main.src/1; gkillapp "$GAPPID"; break ;;
+			[Nn] ) geco "\n\n+ Okay, uninstallation process will exit"
+					return 101; break ;;
+				*) geco "\n- Enter either ${GREEN}Y${RC}es or no" ;;
+		esac
+	done
+fi
+
 # Restore stock kernel image
 if [ -f "$RESCUE_KERNEL_IMAGE" ]; then
 	geco "\n+ Restoring stock kernel image ..." && sleep 1

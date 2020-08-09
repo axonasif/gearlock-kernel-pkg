@@ -64,7 +64,8 @@ test -d "$BD$FIRMDIR" && rm -r "$BD$FIRMDIR"
 # Main Loop
 if [ -d "$BD$FIRMDIR" ]; then
 	geco "This kernel package also provides additional firmware."
-	while true; do
+	while true
+	do
 		read -n1 -p "$(geco "Do you want to upgrade the ${BLUE}firmware${RC} through this kernel package? [${GREEN}Y${RC}/n]") " i
 		case $i in
 			[Yy] ) geco "\n\n+ Placing the kernel module and firmware files into your system"
