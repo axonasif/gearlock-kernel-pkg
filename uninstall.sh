@@ -5,6 +5,7 @@
 # Define variables
 FIRMDIR="/system/lib/firmware"
 DALVIKDIR="/data/dalvik-cache"
+EFFECTIVE_FIRMDIR_PLACEHOLDER="$FIRMDIR/effective-kernel"
 RESCUE_KERNEL_IMAGE="$GRROOT/rescue-kernel"
 
 # Define functions
@@ -25,7 +26,7 @@ if [ -f "$RESCUE_KERNEL_IMAGE" ]; then
 fi
 
 # Restore stock modules/firmware dir
-if [ -d "$FIRMDIR.old" ]; then
+if [ -d "$FIRMDIR.old" ] && [ "$(cat "$EFFECTIVE_FIRMDIR_PLACEHOLDER")"  == "${NAME}_${VERSION}" ]; then
 	geco "\n+ Restoring stock "$(basename "$FIRMDIR")" ..."
 	nout rm -rf "$FIRMDIR" && mv "$FIRMDIR.old" "$FIRMDIR"; handleError "Failed to restore stock "$(basename "$FIRMDIR")""
 fi

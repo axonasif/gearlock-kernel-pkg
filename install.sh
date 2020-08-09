@@ -11,6 +11,7 @@ get_base_dir # Returns execution directory path in $BD variable
 FIRMDIR="/system/lib/firmware"
 DALVIKDIR="/data/dalvik-cache"
 PKG_KERNEL_IMAGE="$BD/kernel"
+EFFECTIVE_FIRMDIR_PLACEHOLDER="$FIRMDIR/effective-kernel"
 RESCUE_KERNEL_IMAGE="$GRROOT/rescue-kernel"
 
 # Define functions
@@ -67,6 +68,7 @@ if [ -d "$BD$FIRMDIR" ]; then
 		read -n1 -p "$(geco "Do you want to upgrade the ${BLUE}firmware${RC} through this kernel package? [${GREEN}Y${RC}/n]") " i
 		case $i in
 			[Yy] ) geco "\n\n+ Placing the kernel module and firmware files into your system"
+					echo "${NAME}_${VERSION}" > "$EFFECTIVE_FIRMDIR_PLACEHOLDER"
 					nout mv "$FIRMDIR" "$FIRMDIR.old"; handleError "Failed to backup old firmware"; doJob; break ;;
 			[Nn] ) geco "\n\n+ Placing the kernel module files into your system"
 					rm -r "$BD$FIRMDIR" && doJob; break ;;
