@@ -9,11 +9,13 @@ get_base_dir # Returns execution directory path in $BD variable
 
 # Define variables
 FIRMDIR="/system/lib/firmware"
-FIRMDIR_OLD="/system/lib/firmware.old"
+FIRMDIR_OLD="$FIRMDIR.old"
+FIRMDIR_UPDATE="$FIRMDIR.update"
 DALVIKDIR="/data/dalvik-cache"
 PKG_KERNEL_IMAGE="$BD/kernel"
-EFFECTIVE_FIRMDIR_PLACEHOLDER="$FIRMDIR/effective-kernel"
+EFFECTIVE_FIRMDIR_PLACEHOLDER="effective-kernel"
 RESCUE_KERNEL_IMAGE="$GRROOT/rescue-kernel"
+GBSCRIPT="$GBDIR/init/UpdateKernelFirmware"
 
 # Define functions
 handleError ()
@@ -26,11 +28,36 @@ handleError ()
 	fi
 }
 
+make_gbscript ()
+{
+cat << EOF >> "$GBSCRIPT"
+
+handleError ()
+{
+
+test \$? != 0 && geco "\n++++ Error: \$1" && exit \${2:-101}
+
+}
+
+if [ -d "$FIRMDIR_UPDATE" ]; then
+	geco "--+ Updating pending firmware"
+	if [ -e "$FIRMDIR_OLD" ]; then nout rm -r "$FIRMDIR_OLD"; handleError "Failed to cleanup firmware.old"; fi
+	mv "$FIRMDIR" "$FIRMDIR_OLD"; handleError "Failed to backup old firmware"
+	mv "$FIRMDIR_UPDATE" "$FIRMDIR"; handleError "Failed to install firmware update"
+    
+    write_gbscript "Kernel Firmware Update Successful"
+	rm "$0" # Remove GBSCRIPT when operation is successful
+	
+fi
+EOF
+
+}
+
 doJob ()
 {
 
 # Make sure KERNEL_IMAGE exist and is accessible
-test -n "$KERNEL_IMAGE" -a -e "$KERNEL_IMAGE"; handleError "Kernel image is not accessible"
+	test -n "$KERNEL_IMAGE" -a -e "$KERNEL_IMAGE"; handleError "Kernel image is not accessible"
 
 # Merge files
 	gclone "$BD/system/" "$SYSTEM_DIR"; handleError "Failed to place files"
@@ -63,25 +90,9 @@ test -n "$KERNEL_IMAGE" -a -e "$KERNEL_IMAGE"; handleError "Kernel image is not 
 }
 
 
-# Deny installation from GUI to avoid system crash
-if [ "$GEARLOCK_APP" == "yes" ]; then
-	geco "\n+ You can not install kernel from GUI, it will crash your system"
-	while true
-	do
-		read -n1 -p "$(geco "Do you want to switch to ${BGREEN}tty${RC} and install from there ? [${GREEN}Y${RC}/n]") " i
-		case $i in
-					
-			[Yy] ) geco "\n\n+ Switching to tty GearLock ..." && sleep 1
-					openvt -s bash gsudo gearlock-cli main.src/1; gkillapp "$GAPPID"; exit 101; break ;;
-						
-			[Nn] ) geco "\n\n+ Okay, installation process will exit"
-					exit 101; break ;;
-						
-				*) geco "\n- Enter either ${GREEN}Y${RC}es or no" ;;
-					
-		esac
-	done
-fi
+# Warning info for installation from GUI to avoid system crash
+test "$ANDROID_GUI" == "yes" -o "$BOOTCOMP" == "yes" \
+&& geco "+ You seem to be installing from a live system, best practice is to install from RECOVERY-MODE.\n"
 
 # Main Loop
 if [ -d "$BD$FIRMDIR" ]; then
@@ -92,18 +103,27 @@ if [ -d "$BD$FIRMDIR" ]; then
 		case $i in
 					
 			[Yy] ) geco "\n\n+ Placing the kernel module and firmware files into your system"
-					test -e "$FIRMDIR_OLD" && nout rm -r "$FIRMDIR_OLD"; handleError "Failed to cleanup firmware.old"
-					mv "$FIRMDIR" "$FIRMDIR_OLD"; handleError "Failed to backup old firmware"
-					doJob; echo "${NAME}_${VERSION}" > "$EFFECTIVE_FIRMDIR_PLACEHOLDER"; break ;;
-						
+					
+					if [ "$ANDROID_GUI" == "yes" ]; then
+						make_gbscript; mv "${BD}${FIRMDIR}" "${BD}${FIRMDIR_UPDATE}"; handleError "Failed to rename package firmware to firmware.update"
+						echo "${NAME}_${VERSION}" > "${BD}${FIRMDIR_UPDATE}${EFFECTIVE_FIRMDIR_PLACEHOLDER}"
+					else
+						if [ -e "$FIRMDIR_OLD" ]; then nout rm -r "$FIRMDIR_OLD"; handleError "Failed to cleanup firmware.old"; fi
+						mv "$FIRMDIR" "$FIRMDIR_OLD"; handleError "Failed to backup old firmware"
+						doJob; echo "${NAME}_${VERSION}" > "${FIRMDIR}${EFFECTIVE_FIRMDIR_PLACEHOLDER}"; break ;;
+					fi
+					
 			[Nn] ) geco "\n\n+ Placing the kernel module files into your system"
-					nout rm -r "$BD$FIRMDIR"; handleError "Failed to cleanup package firmware"; doJob; break ;;
-						
+					
+						if [ -e "$GBSCRIPT" ]; then rm "$GBSCRIPT"; handleError "Failed to remove pre-existing kernel updater GearBoot script"; fi
+						nout rm -r "${BD}${FIRMDIR}"; handleError "Failed to cleanup package firmware"; doJob; break ;;
+					
 				*) geco "\n- Enter either ${GREEN}Y${RC}es or no" ;;
 					
 		esac
 	done
 else
+	if [ -e "$GBSCRIPT" ]; then rm "$GBSCRIPT"; handleError "Failed to remove pre-existing kernel updater GearBoot script"; fi
 	geco "\n+ Placing the kernel module files into your system" && doJob
 fi
 
