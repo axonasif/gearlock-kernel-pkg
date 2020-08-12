@@ -17,9 +17,6 @@ RESCUE_KERNEL_IMAGE="$GRROOT/rescue-kernel"
 handleError ()
 { 
 	if [ $? != 0 ]; then
-		# Revert back any incomplete changes
-		test ! -e "$FIRMDIR" -a -e "$FIRMDIR_OLD" && mv "$FIRMDIR_OLD" "$FIRMDIR"
-		test ! -e "$KERNEL_IMAGE" -a -e "$RESCUE_KERNEL_IMAGE" && mv "$RESCUE_KERNEL_IMAGE" "$KERNEL_IMAGE"
 		geco "\n++++ Error: $1" && exit ${2:-101}
 	fi
 }

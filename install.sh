@@ -20,35 +20,54 @@ GBSCRIPT="$GBDIR/init/UpdateKernelFirmware"
 # Define functions
 handleError ()
 { 
+
 	if [ $? != 0 ]; then
 		# Revert back any incomplete changes
 		test ! -e "$FIRMDIR" -a -e "$FIRMDIR_OLD" && mv "$FIRMDIR_OLD" "$FIRMDIR"
 		test ! -e "$KERNEL_IMAGE" -a -e "$RESCUE_KERNEL_IMAGE" && mv "$RESCUE_KERNEL_IMAGE" "$KERNEL_IMAGE"
 		geco "\n++++ Error: $1" && exit ${2:-101}
 	fi
+
 }
 
 make_gbscript ()
 {
-cat << EOF >> "$GBSCRIPT"
+
+cat << EOF > "$GBSCRIPT"
+
+## Kernel firmware updater gearboot script for live system installation
+#######################################################################
 
 handleError ()
 {
-
-test \$? != 0 && geco "\n++++ Error: \$1" && exit \${2:-101}
-
+	test \$? != 0 && geco "\n++++ Error: \$1" && exit \${2:-101}
 }
 
 if [ -d "$FIRMDIR_UPDATE" ]; then
-	geco "--+ Updating pending firmware"
+	geco "--+ Updating pending kernel firmware"
 	if [ -e "$FIRMDIR_OLD" ]; then nout rm -r "$FIRMDIR_OLD"; handleError "Failed to cleanup firmware.old"; fi
 	mv "$FIRMDIR" "$FIRMDIR_OLD"; handleError "Failed to backup old firmware"
 	mv "$FIRMDIR_UPDATE" "$FIRMDIR"; handleError "Failed to install firmware update"
-    
-    write_gbscript "Kernel Firmware Update Successful"
-	rm "$0" # Remove GBSCRIPT when operation is successful
-	
+	write_gbscript "Kernel Firmware Update Successful"
+	rm "\$0" # Remove GBSCRIPT when operation is successful
+else
+	rm "\$0" # Remove GBSCRIPT while firmware.update is not valid
 fi
+
+EOF
+
+}
+
+make_gbscript_clearDalvik ()
+{
+
+cat << EOF > "$GBDIR/init/ClearDalvik_For_KernelUpdate"
+
+## Dalvik cache cleaning gearboot script for live system installation
+######################################################################
+
+test -d "$DALVIKDIR" && geco "\n+ Clearing dalvik-cache, it may take a bit long on your next boot" && rm -rf "$DALVIKDIR"/*
+
 EOF
 
 }
@@ -91,8 +110,7 @@ doJob ()
 
 
 # Warning info for installation from GUI to avoid system crash
-test "$ANDROID_GUI" == "yes" -o "$BOOTCOMP" == "yes" \
-&& geco "+ You seem to be installing from a live system, best practice is to install from RECOVERY-MODE.\n"
+test "$BOOTCOMP" == "yes" && geco "+ You seem to be installing from a live system, best practice is to install from RECOVERY-MODE.\n"
 
 # Main Loop
 if [ -d "$BD$FIRMDIR" ]; then
@@ -106,26 +124,36 @@ if [ -d "$BD$FIRMDIR" ]; then
 					
 					if [ "$ANDROID_GUI" == "yes" ]; then
 						make_gbscript; mv "${BD}${FIRMDIR}" "${BD}${FIRMDIR_UPDATE}"; handleError "Failed to rename package firmware to firmware.update"
-						echo "${NAME}_${VERSION}" > "${BD}${FIRMDIR_UPDATE}${EFFECTIVE_FIRMDIR_PLACEHOLDER}"
+						echo "${NAME}_${VERSION}" > "${BD}${FIRMDIR_UPDATE}/${EFFECTIVE_FIRMDIR_PLACEHOLDER}"; doJob; break
 					else
 						if [ -e "$FIRMDIR_OLD" ]; then nout rm -r "$FIRMDIR_OLD"; handleError "Failed to cleanup firmware.old"; fi
 						mv "$FIRMDIR" "$FIRMDIR_OLD"; handleError "Failed to backup old firmware"
-						doJob; echo "${NAME}_${VERSION}" > "${FIRMDIR}${EFFECTIVE_FIRMDIR_PLACEHOLDER}"; break ;;
+						doJob; echo "${NAME}_${VERSION}" > "${FIRMDIR}/${EFFECTIVE_FIRMDIR_PLACEHOLDER}"; break
 					fi
+					
+				;;
 					
 			[Nn] ) geco "\n\n+ Placing the kernel module files into your system"
 					
 						if [ -e "$GBSCRIPT" ]; then rm "$GBSCRIPT"; handleError "Failed to remove pre-existing kernel updater GearBoot script"; fi
-						nout rm -r "${BD}${FIRMDIR}"; handleError "Failed to cleanup package firmware"; doJob; break ;;
+						nout rm -r "${BD}${FIRMDIR}"; handleError "Failed to cleanup package firmware"; doJob; break
 					
-				*) geco "\n- Enter either ${GREEN}Y${RC}es or no" ;;
+				;;
+					
+				*) geco "\n- Enter either ${GREEN}Y${RC}es or no"
+				
+				;;
 					
 		esac
 	done
 else
-	if [ -e "$GBSCRIPT" ]; then rm "$GBSCRIPT"; handleError "Failed to remove pre-existing kernel updater GearBoot script"; fi
+	if [ -e "$GBSCRIPT" ]; then nout rm "$GBSCRIPT"; handleError "Failed to remove pre-existing kernel updater GearBoot script"; fi
 	geco "\n+ Placing the kernel module files into your system" && doJob
 fi
 
 # Clear dalvik-cache
-test -d "$DALVIKDIR" && geco "\n+ Clearing dalvik-cache, it may take a bit long on your next boot" && rm -rf "$DALVIKDIR"/*
+if [ "$ANDROID_GUI" != "yes" -a -d "$DALVIKDIR" ]; then
+	geco "\n+ Clearing dalvik-cache, it may take a bit long on your next boot" && rm -rf "$DALVIKDIR"/*
+elif [ "$ANDROID_GUI" == "yes" -a -d "$DALVIKDIR" ]; then
+	make_gbscript_clearDalvik
+fi
