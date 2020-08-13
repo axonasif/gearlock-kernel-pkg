@@ -83,7 +83,7 @@ doJob ()
 	gclone "$BD/system/" "$SYSTEM_DIR"; handleError "Failed to place files"
 
 # Backup kernel image
-	geco "\n\n+ Backing up your current kernel image: \c" && sleep 1
+	geco "\n\n+ Backing up your stock kernel image: \c" && sleep 1
 	if [ -e "$RESCUE_KERNEL_IMAGE" ]; then
 		geco "Already backed up as $(basename "$RESCUE_KERNEL_IMAGE")"
 	else
