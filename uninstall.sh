@@ -22,11 +22,25 @@ handleError ()
 }
 
 # Deny uninstallation from GUI to avoid system crash
-if [ "$ANDROID_GUI" == "yes" ]; then
+if [ "$TERMINAL_EMULATOR" == "yes" ]; then
 	geco "\n+ You can not uninstall kernel from Android GUI, it will crash your system."
 	geco "+ It is not recommended that you uninstall from a live system, best practice is to uninstall from RECOVERY-MODE."
-	geco "\n+ You can still run GearLock in ${PURPLE}TTY${RC} and uninstall from there but it's not recommended."
-	return 101
+	geco "\n+ You can still run GearLock in ${PURPLE}TTY${RC} and uninstall from there but it's not recommended.\N"
+	while true
+	do
+		read -n1 -p "$(geco "Do you want to switch to ${BGREEN}TTY${RC} and uninstall from there ? [${GREEN}Y${RC}/n]") " i
+		case $i in
+					
+			[Yy] ) geco "\n\n+ Switching to tty GearLock GXPM Ui ..." && sleep 1
+					export GSUDO=yes && openvt -s "$GRLBASE"/bin/bash gearlock-cli main.src/1; gkillapp "$GAPPID"; return 101; break ;;
+						
+			[Nn] ) geco "\n\n+ Okay, uninstallation process will exit"
+					return 101; break ;;
+						
+				*) geco "\n- Enter either ${GREEN}Y${RC}es or no" ;;
+					
+		esac
+	done
 fi
 
 # Restore stock kernel image

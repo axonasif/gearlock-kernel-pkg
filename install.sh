@@ -46,7 +46,7 @@ handleError ()
 if [ -d "$FIRMDIR_UPDATE" ]; then
 	geco "--+ Updating pending kernel firmware"
 	if [ -e "$FIRMDIR_OLD" ]; then nout rm -r "$FIRMDIR_OLD"; handleError "Failed to cleanup firmware.old"; fi
-	mv "$FIRMDIR" "$FIRMDIR_OLD"; handleError "Failed to backup old firmware"
+	if [ -e "$FIRMDIR" ]; then mv "$FIRMDIR" "$FIRMDIR_OLD"; handleError "Failed to backup old firmware"; fi
 	mv "$FIRMDIR_UPDATE" "$FIRMDIR"; handleError "Failed to install firmware update"
 	write_gbscript "Kernel Firmware Update Successful"
 	rm "\$0" # Remove GBSCRIPT when operation is successful
@@ -66,7 +66,8 @@ cat << EOF > "$GBDIR/init/ClearDalvik_For_KernelUpdate"
 ## Dalvik cache cleaning gearboot script for live system installation
 ######################################################################
 
-test -d "$DALVIKDIR" && geco "\n+ Clearing dalvik-cache, it may take a bit long on your next boot" && rm -rf "$DALVIKDIR"/*
+test -d "$DALVIKDIR" && geco "--+ Clearing dalvik-cache, it may take a bit long on this bootup" && rm -rf "$DALVIKDIR"/*
+rm "\$0"
 
 EOF
 
@@ -122,12 +123,12 @@ if [ -d "$BD$FIRMDIR" ]; then
 					
 			[Yy] ) geco "\n\n+ Placing the kernel module and firmware files into your system"
 					
-					if [ "$ANDROID_GUI" == "yes" ]; then
+					if [ "$TERMINAL_EMULATOR" == "yes" ]; then
 						make_gbscript; mv "${BD}${FIRMDIR}" "${BD}${FIRMDIR_UPDATE}"; handleError "Failed to rename package firmware to firmware.update"
 						echo "${NAME}_${VERSION}" > "${BD}${FIRMDIR_UPDATE}/${EFFECTIVE_FIRMDIR_PLACEHOLDER}"; doJob; break
 					else
 						if [ -e "$FIRMDIR_OLD" ]; then nout rm -r "$FIRMDIR_OLD"; handleError "Failed to cleanup firmware.old"; fi
-						mv "$FIRMDIR" "$FIRMDIR_OLD"; handleError "Failed to backup old firmware"
+						if [ -e "$FIRMDIR" ]; then mv "$FIRMDIR" "$FIRMDIR_OLD"; handleError "Failed to backup old firmware"; fi
 						doJob; echo "${NAME}_${VERSION}" > "${FIRMDIR}/${EFFECTIVE_FIRMDIR_PLACEHOLDER}"; break
 					fi
 					
@@ -152,8 +153,8 @@ else
 fi
 
 # Clear dalvik-cache
-if [ "$ANDROID_GUI" != "yes" -a -d "$DALVIKDIR" ]; then
+if [ "$TERMINAL_EMULATOR" != "yes" -a -d "$DALVIKDIR" ]; then
 	geco "\n+ Clearing dalvik-cache, it may take a bit long on your next boot" && rm -rf "$DALVIKDIR"/*
-elif [ "$ANDROID_GUI" == "yes" -a -d "$DALVIKDIR" ]; then
+elif [ "$TERMINAL_EMULATOR" == "yes" -a -d "$DALVIKDIR" ]; then
 	make_gbscript_clearDalvik
 fi
