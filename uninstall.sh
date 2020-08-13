@@ -31,8 +31,8 @@ if [ "$TERMINAL_EMULATOR" == "yes" ]; then
 		read -n1 -p "$(geco "Do you want to switch to ${BGREEN}TTY${RC} and uninstall from there ? [${GREEN}Y${RC}/n]") " i
 		case $i in
 					
-			[Yy] ) geco "\n\n+ Switching to tty GearLock GXPM Ui ..." && sleep 2
-					export GSUDO=yes && openvt -s gbash gearlock-cli main.src/1; return 101; break ;;
+			[Yy] ) geco "\n\n+ Switching to TTY GearLock GXPM ..." && sleep 2
+					openvt -s gbash gxpm -u "$0"; return 101; break ;;
 						
 			[Nn] ) geco "\n\n+ Okay, uninstallation process will exit"
 					return 101; break ;;
