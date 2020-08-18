@@ -32,7 +32,7 @@ if [ "$TERMINAL_EMULATOR" == "yes" ]; then
 		case $i in
 					
 			[Yy] ) geco "\n\n+ Switching to TTY GearLock GXPM ..." && sleep 2
-					openvt -s gbash gxpm -u "$0"; return 101; break ;;
+					gsudo openvt -s gbash gxpm -u "$0"; return 101; break ;;
 						
 			[Nn] ) geco "\n\n+ Okay, uninstallation process will exit"
 					return 101; break ;;
