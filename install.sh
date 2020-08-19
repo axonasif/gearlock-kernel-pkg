@@ -15,7 +15,8 @@ DALVIKDIR="/data/dalvik-cache"
 PKG_KERNEL_IMAGE="$BD/kernel"
 EFFECTIVE_FIRMDIR_PLACEHOLDER="effective-kernel"
 RESCUE_KERNEL_IMAGE="$GRROOT/rescue-kernel"
-GBSCRIPT="$GBDIR/init/UpdateKernelFirmware"
+GBSCRIPT[1]="$GBDIR/init/UpdateKernelFirmware"
+GBSCRIPT[2]="$GBDIR/init/ClearDalvikForKernelUpdate"
 
 # Define functions
 handleError ()
@@ -33,7 +34,7 @@ handleError ()
 make_gbscript ()
 {
 
-cat << EOF > "$GBSCRIPT"
+cat << EOF > "${GBSCRIPT[1]}"
 
 ## Kernel firmware updater gearboot script for live system installation
 #######################################################################
@@ -61,7 +62,7 @@ EOF
 make_gbscript_clearDalvik ()
 {
 
-cat << EOF > "$GBDIR/init/ClearDalvik_For_KernelUpdate"
+cat << EOF > "${GBSCRIPT[2]}"
 
 ## Dalvik cache cleaning gearboot script for live system installation
 ######################################################################

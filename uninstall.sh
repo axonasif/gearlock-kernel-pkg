@@ -1,17 +1,23 @@
 ## For proper developer documentation, visit https://supreme-gamers.com/gearlock
-# GEN_UNINS is enabled for this prebuild-kernel package (Check `!zygote.sh`)
+# GEN_UNINS is enabled for this prebuild-kernel package (Check `!zygote.sh`).
 #
 # Which will log all the files present inside your package `system` dir
-# and merge that as a function with your custom `uninstall.sh`
+# and merge that as a function with your custom `uninstall.sh`.
 #
-# You don't need to modify this `uninstall.sh`
+# You don't need to modify this `uninstall.sh`.
+# 
+# $UNINS_SCRIPT variable is provided by GXPM which returns
+# full path for the locally prepared uninstallation script.
 
 # Define variables
 FIRMDIR="/system/lib/firmware"
-FIRMDIR_OLD="/system/lib/firmware.old"
+FIRMDIR_OLD="$FIRMDIR.old"
+FIRMDIR_UPDATE="$FIRMDIR.update"
 DALVIKDIR="/data/dalvik-cache"
 EFFECTIVE_FIRMDIR_PLACEHOLDER="$FIRMDIR/effective-kernel"
 RESCUE_KERNEL_IMAGE="$GRROOT/rescue-kernel"
+GBSCRIPT[1]="$GBDIR/init/UpdateKernelFirmware"
+GBSCRIPT[2]="$GBDIR/init/ClearDalvikForKernelUpdate"
 
 # Define functions
 handleError ()
@@ -32,7 +38,7 @@ if [ "$TERMINAL_EMULATOR" == "yes" ]; then
 		case $i in
 					
 			[Yy] ) geco "\n\n+ Switching to TTY GearLock GXPM ..." && sleep 2
-					gsudo openvt -s gbash gxpm -u "$0"; return 101; break ;;
+					gsudo openvt -s gxpm -u "$UNINS_SCRIPT"; return 101; break ;;
 						
 			[Nn] ) geco "\n\n+ Okay, uninstallation process will exit"
 					return 101; break ;;
@@ -42,6 +48,10 @@ if [ "$TERMINAL_EMULATOR" == "yes" ]; then
 		esac
 	done
 fi
+
+# Check if the user is running uninstall right after installation without reboot (For GUI installation)
+if test -e "$FIRMDIR_UPDATE"; then rm -r "$FIRMDIR_UPDATE"; handleError "Failed to cleanup $(basename "$FIRMDIR_UPDATE")"; fi
+if test -e "${GBSCRIPT[1]}"; then rm "${GBSCRIPT[1]}" "${GBSCRIPT[2]}"; handleError "Failed to cleanup temporary kernel updating GearBoot scripts"; fi
 
 # Restore stock kernel image
 if [ -f "$RESCUE_KERNEL_IMAGE" ]; then
