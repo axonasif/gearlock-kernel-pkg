@@ -10,6 +10,7 @@
 # full path for the locally prepared uninstallation script.
 
 # Define variables
+TTY_NUM="$(fgconsole)"
 FIRMDIR="/system/lib/firmware"
 FIRMDIR_OLD="$FIRMDIR.old"
 FIRMDIR_UPDATE="$FIRMDIR.update"
@@ -67,3 +68,4 @@ fi
 
 # Clear dalvik-cache
 test -d "$DALVIKDIR" && geco "\n+ Clearing dalvik-cache, it may take a bit long on your next boot ..." && rm -rf "$DALVIKDIR"/*
+test "$BOOTCOMP" == "yes" && sleep 3 && chvt "$TTY_NUM" # A workaround to retrun back to initial tty when booted android system crashes and switches to tty7
