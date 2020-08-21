@@ -24,14 +24,14 @@ handleError ()
 
 	if [ $? != 0 ]; then
 		# Revert back any incomplete changes
-		test ! -e "$FIRMDIR" -a -e "$FIRMDIR_OLD" && mv "$FIRMDIR_OLD" "$FIRMDIR"
-		test ! -e "$KERNEL_IMAGE" -a -e "$RESCUE_KERNEL_IMAGE" && mv "$RESCUE_KERNEL_IMAGE" "$KERNEL_IMAGE"
+		test ! -e "$FIRMDIR" && test -e "$FIRMDIR_OLD" && mv "$FIRMDIR_OLD" "$FIRMDIR"
+		test ! -e "$KERNEL_IMAGE" && test -e "$RESCUE_KERNEL_IMAGE" && mv "$RESCUE_KERNEL_IMAGE" "$KERNEL_IMAGE"
 		geco "\n++++ Error: $1" && exit ${2:-101}
 	fi
 
 }
 
-make_gbscript ()
+make_gbscript_UpdateFirmware ()
 {
 
 cat << EOF > "${GBSCRIPT[1]}"
@@ -49,7 +49,7 @@ if [ -d "$FIRMDIR_UPDATE" ]; then
 	if [ -e "$FIRMDIR_OLD" ]; then nout rm -r "$FIRMDIR_OLD"; handleError "Failed to cleanup firmware.old"; fi
 	if [ -e "$FIRMDIR" ]; then mv "$FIRMDIR" "$FIRMDIR_OLD"; handleError "Failed to backup old firmware"; fi
 	mv "$FIRMDIR_UPDATE" "$FIRMDIR"; handleError "Failed to install firmware update"
-	write_gbscript "Kernel Firmware Update Successful"
+	write_gblog "Kernel Firmware Update Successful"
 	rm "\$0" # Remove GBSCRIPT when operation is successful
 else
 	rm "\$0" # Remove GBSCRIPT while firmware.update is not valid
@@ -78,7 +78,7 @@ doJob ()
 {
 
 # Make sure KERNEL_IMAGE exist and is accessible
-	test -n "$KERNEL_IMAGE" -a -e "$KERNEL_IMAGE"; handleError "Kernel image is not accessible"
+	test -n "$KERNEL_IMAGE" && test -e "$KERNEL_IMAGE"; handleError "Kernel image is not accessible"
 
 # Merge files
 	gclone "$BD/system/" "$SYSTEM_DIR"; handleError "Failed to place files"
@@ -125,7 +125,7 @@ if [ -d "$BD$FIRMDIR" ]; then
 			[Yy] ) geco "\n\n+ Placing the kernel module and firmware files into your system"
 					
 					if [ "$TERMINAL_EMULATOR" == "yes" ]; then
-						make_gbscript; mv "${BD}${FIRMDIR}" "${BD}${FIRMDIR_UPDATE}"; handleError "Failed to rename package firmware to firmware.update"
+						make_gbscript_UpdateFirmware; mv "${BD}${FIRMDIR}" "${BD}${FIRMDIR_UPDATE}"; handleError "Failed to rename package firmware to firmware.update"
 						echo "${NAME}_${VERSION}" > "${BD}${FIRMDIR_UPDATE}/${EFFECTIVE_FIRMDIR_PLACEHOLDER}"; doJob; break
 					else
 						if [ -e "$FIRMDIR_OLD" ]; then nout rm -r "$FIRMDIR_OLD"; handleError "Failed to cleanup firmware.old"; fi
@@ -154,8 +154,8 @@ else
 fi
 
 # Clear dalvik-cache
-if [ "$TERMINAL_EMULATOR" != "yes" -a -d "$DALVIKDIR" ]; then
+if test "$TERMINAL_EMULATOR" != "yes" && test -d "$DALVIKDIR"; then
 	geco "\n+ Clearing dalvik-cache, it may take a bit long on your next boot" && rm -rf "$DALVIKDIR"/*
-elif [ "$TERMINAL_EMULATOR" == "yes" -a -d "$DALVIKDIR" ]; then
+elif test "$TERMINAL_EMULATOR" == "yes" && test -d "$DALVIKDIR"; then
 	make_gbscript_clearDalvik
 fi
