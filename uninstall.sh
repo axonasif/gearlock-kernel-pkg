@@ -32,7 +32,7 @@ handleError ()
 if [ "$TERMINAL_EMULATOR" == "yes" ]; then
 	geco "\n+ You can not uninstall kernel from Android GUI, it will crash your system."
 	geco "+ It is not recommended that you uninstall from a live system, best practice is to uninstall from RECOVERY-MODE."
-	geco "\n+ You can still run GearLock in ${PURPLE}TTY${RC} and uninstall from there but it's not recommended.\N"
+	geco "+ You can still run GearLock in ${PURPLE}TTY${RC} and uninstall from there but it's not recommended.\n"
 	while true
 	do
 		read -n1 -p "$(geco "Do you want to switch to ${BGREEN}TTY${RC} and uninstall from there ? [${GREEN}Y${RC}/n]") " i
@@ -52,7 +52,7 @@ fi
 
 # Check if the user is running uninstall right after installation without reboot (For GUI installation)
 if test -e "$FIRMDIR_UPDATE"; then rm -r "$FIRMDIR_UPDATE"; handleError "Failed to cleanup $(basename "$FIRMDIR_UPDATE")"; fi
-if test -e "${GBSCRIPT[1]}"; then rm "${GBSCRIPT[1]}" "${GBSCRIPT[2]}"; handleError "Failed to cleanup temporary kernel updating GearBoot scripts"; fi
+rm -f "${GBSCRIPT[1]}" "${GBSCRIPT[2]}"
 
 # Restore stock kernel image
 if [ -f "$RESCUE_KERNEL_IMAGE" ]; then
