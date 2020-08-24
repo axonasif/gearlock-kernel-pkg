@@ -113,7 +113,7 @@ doJob ()
 
 # Do not allow GearLock versions below 6.5
 # # if ! check_compat 6.5; then geco "+\n Please update GearLock to install this"; exit 101; fi
-test "$COMPAT" != "yes" && geco "+\n Please update GearLock to install this" && exit 101
+test "$COMPAT" != "yes" && geco "\n+ Please update GearLock to install this" && exit 101
 
 # Warning info for installation from GUI to avoid system crash
 test "$BOOTCOMP" == "yes" && geco "+ You seem to be installing from a live system, best practice is to install from RECOVERY-MODE.\n"
