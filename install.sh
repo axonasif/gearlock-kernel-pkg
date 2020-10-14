@@ -3,10 +3,30 @@
 ## For proper developer documentation, visit https://supreme-gamers.com/gearlock
 # Check `!zygote.sh` to configure your package functions or gearlock can also guide you during the build process.
 
+
+
+# Since GearLock 6.7.7 I decided to hold a native installation script inside gearlock/core instead.
+# To overcome the issue of needing to repack kernel packages just to update their install/uninstall scripts.
+# It's recommended that you use NATIVE_INSTALL, but if you prefer to add your own functions then you may set it to `false`. 
+NATIVE_INSTALL=true
+
+
 #####--- Import Functions ---#####
 get_base_dir # Returns execution directory path in $BD variable
-check_compat 6.5 # Returns yes in $COMPAT variable if the user is running at least 6.5 GearLock
+check_compat 6.7.7 # Returns yes in $COMPAT variable if the user is running at least 6.7.7 GearLock
 #####--- Import Functions ---#####
+
+
+# Load native scripts (When NATIVE_INSTALL is true)
+if test "$NATIVE_INSTALL" == "true"; then
+	rsync "$CORE/gxpm/kernel-native/uninstall.sh" "$BD/uninstall.sh"
+	rsync "$CORE/gxpm/kernel-native/install.sh" "$BD/install.sh" && exec "$BD/install.sh"
+fi
+
+
+###
+### Start of un-native installer script (When NATIVE_INSTALL is false)
+###
 
 # Define variables
 FIRMDIR="/system/lib/firmware"
