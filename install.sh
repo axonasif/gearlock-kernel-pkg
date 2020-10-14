@@ -26,7 +26,7 @@ handleError ()
 	if [ $? != 0 ]; then
 		# Revert back any incomplete changes
 		test ! -e "$FIRMDIR" && test -e "$FIRMDIR_OLD" && mv "$FIRMDIR_OLD" "$FIRMDIR"
-		test ! -e "$KERNEL_IMAGE" && test -e "$RESCUE_KERNEL_IMAGE" && mv "$RESCUE_KERNEL_IMAGE" "$KERNEL_IMAGE"
+		test ! -f "$KERNEL_IMAGE" && test -f "$RESCUE_KERNEL_IMAGE" && mv "$RESCUE_KERNEL_IMAGE" "$KERNEL_IMAGE"
 		geco "\n++++ Error: $1" && exit ${2:-101}
 	fi
 
@@ -51,10 +51,9 @@ if [ -d "$FIRMDIR_UPDATE" ]; then
 	if [ -e "$FIRMDIR" ]; then mv "$FIRMDIR" "$FIRMDIR_OLD"; handleError "Failed to backup old firmware"; fi
 	mv "$FIRMDIR_UPDATE" "$FIRMDIR"; handleError "Failed to install firmware update"
 	write_gblog "Kernel Firmware Update Successful"
-	rm "\$0" # Remove GBSCRIPT when operation is successful
-else
-	rm "\$0" # Remove GBSCRIPT while firmware.update is not valid
 fi
+
+rm "\$0" # Remove GBSCRIPT
 
 EOF
 
@@ -86,10 +85,10 @@ doJob ()
 
 # Backup kernel image
 	geco "\n\n+ Backing up your stock kernel image: \c" && sleep 1
-	if test -e "$RESCUE_KERNEL_IMAGE"; then
+	if test -f "$RESCUE_KERNEL_IMAGE"; then
 		geco "Already backed up as $(basename "$RESCUE_KERNEL_IMAGE")"
 	else
-		if test -e "$KERNEL_IMAGE"; then
+		if test -f "$KERNEL_IMAGE"; then
 			nout mv "$KERNEL_IMAGE" "$RESCUE_KERNEL_IMAGE"; handleError "Failed to backup stock kernel image"
 			geco "Renamed from $(basename "$KERNEL_IMAGE") to $(basename "$RESCUE_KERNEL_IMAGE")"
 		else
@@ -145,7 +144,7 @@ if [ -d "$BD$FIRMDIR" ]; then
 					
 			[Nn] ) geco "\n\n+ Placing the kernel module files into your system"
 					
-						if [ -e "$GBSCRIPT" ]; then rm "$GBSCRIPT"; handleError "Failed to remove pre-existing kernel updater GearBoot script"; fi
+						if [ -f "$GBSCRIPT" ]; then rm "$GBSCRIPT"; handleError "Failed to remove pre-existing kernel updater GearBoot script"; fi
 						nout rm -r "${BD}${FIRMDIR}"; handleError "Failed to cleanup package firmware"; doJob; break
 					
 				;;
@@ -157,7 +156,7 @@ if [ -d "$BD$FIRMDIR" ]; then
 		esac
 	done
 else
-	if [ -e "$GBSCRIPT" ]; then nout rm "$GBSCRIPT"; handleError "Failed to remove pre-existing kernel updater GearBoot script"; fi
+	if [ -f "$GBSCRIPT" ]; then nout rm "$GBSCRIPT"; handleError "Failed to remove pre-existing kernel updater GearBoot script"; fi
 	geco "\n+ Placing the kernel module files into your system" && doJob
 fi
 
