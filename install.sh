@@ -29,7 +29,7 @@ fi
 ###
 
 # Define variables
-FIRMDIR="/system/lib/firmware"
+FIRMDIR="$SYSTEM_DIR/lib/firmware"
 FIRMDIR_OLD="$FIRMDIR.old"
 FIRMDIR_UPDATE="$FIRMDIR.update"
 DALVIKDIR="/data/dalvik-cache"
@@ -47,7 +47,7 @@ handleError ()
 		# Revert back any incomplete changes
 		test ! -e "$FIRMDIR" && test -e "$FIRMDIR_OLD" && mv "$FIRMDIR_OLD" "$FIRMDIR"
 		test ! -f "$KERNEL_IMAGE" && test -f "$RESCUE_KERNEL_IMAGE" && mv "$RESCUE_KERNEL_IMAGE" "$KERNEL_IMAGE"
-		geco "\n++++ Error: $1" && exit ${2:-101}
+		geco "\n[!!!] Error: $1" && exit ${2:-101}
 	fi
 
 }
@@ -134,12 +134,15 @@ doJob ()
 
 }
 
-# Do not allow GearLock versions below 6.5
-# # if ! check_compat 6.5; then geco "+\n Please update GearLock to install this"; exit 101; fi
-test "$COMPAT" != "yes" && geco "\n+ Please update GearLock to install this" && exit 101
+# Do not allow GearLock versions below 6.7.7
+# # if ! check_compat 6.7.7; then geco "+\n Please update GearLock to install this"; exit 101; fi
+test "$COMPAT" != "yes" && geco "\n[!!!] Please update GearLock to install this" && exit 101
 
 # Warning info for installation from GUI to avoid system crash
-test "$BOOTCOMP" == "yes" && geco "+ You seem to be installing from a live system, best practice is to install from RECOVERY-MODE.\n"
+test "$BOOTCOMP" == "yes" && geco "[!!!] You seem to be installing from a live system, best practice is to install from RECOVERY-MODE.\n"
+
+# Check if /system is writable
+! touch -c "$SYSTEM_DIR/lib" >/dev/null 2>&1 && geco "[!!!] $SYSTEM_DIR is not writable, did you ${PINK}SuperCharge${RC} it yet ?" && exit 101
 
 # Main Loop
 if [ -d "$BD$FIRMDIR" ]; then
@@ -155,8 +158,12 @@ if [ -d "$BD$FIRMDIR" ]; then
 						make_gbscript_UpdateFirmware; mv "${BD}${FIRMDIR}" "${BD}${FIRMDIR_UPDATE}"; handleError "Failed to rename package firmware to firmware.update"
 						echo "${NAME}_${VERSION}" > "${BD}${FIRMDIR_UPDATE}/${EFFECTIVE_FIRMDIR_PLACEHOLDER}"; doJob; break
 					else
-						if [ -e "$FIRMDIR_OLD" ]; then nout rm -r "$FIRMDIR_OLD"; handleError "Failed to cleanup firmware.old"; fi
-						if [ -e "$FIRMDIR" ]; then mv "$FIRMDIR" "$FIRMDIR_OLD"; handleError "Failed to backup old firmware"; fi
+						if [ -e "$FIRMDIR_OLD" ]; then
+							nout rm -r "$FIRMDIR_OLD"; handleError "Failed to cleanup firmware.old"
+						fi
+						if [ -e "$FIRMDIR" ]; then
+							mv "$FIRMDIR" "$FIRMDIR_OLD"; handleError "Failed to backup old firmware"
+						fi
 						doJob; echo "${NAME}_${VERSION}" > "${FIRMDIR}/${EFFECTIVE_FIRMDIR_PLACEHOLDER}"; break
 					fi
 					
@@ -164,7 +171,9 @@ if [ -d "$BD$FIRMDIR" ]; then
 					
 			[Nn] ) geco "\n\n+ Placing the kernel module files into your system"
 					
-						if [ -f "$GBSCRIPT" ]; then rm "$GBSCRIPT"; handleError "Failed to remove pre-existing kernel updater GearBoot script"; fi
+						if [ -f "$GBSCRIPT" ]; then
+							rm "$GBSCRIPT"; handleError "Failed to remove pre-existing kernel updater GearBoot script"
+						fi
 						nout rm -r "${BD}${FIRMDIR}"; handleError "Failed to cleanup package firmware"; doJob; break
 					
 				;;

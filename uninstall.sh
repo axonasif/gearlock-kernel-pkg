@@ -11,7 +11,7 @@
 
 # Define variables
 TTY_NUM="$(fgconsole)"
-FIRMDIR="/system/lib/firmware"
+FIRMDIR="$SYSTEM_DIR/lib/firmware"
 FIRMDIR_OLD="$FIRMDIR.old"
 FIRMDIR_UPDATE="$FIRMDIR.update"
 DALVIKDIR="/data/dalvik-cache"
@@ -24,7 +24,7 @@ GBSCRIPT[2]="$GBDIR/init/ClearDalvikForKernelUpdate"
 handleError ()
 { 
 	if [ $? != 0 ]; then
-		geco "\n++++ Error: $1" && exit ${2:-101}
+		geco "[!!!]++++ Error: $1" && exit ${2:-101}
 	fi
 }
 
