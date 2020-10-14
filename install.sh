@@ -79,18 +79,22 @@ doJob ()
 {
 
 # Make sure KERNEL_IMAGE exist and is accessible
-	test -n "$KERNEL_IMAGE" && test -e "$KERNEL_IMAGE"; handleError "Kernel image is not accessible"
+	test -n "$KERNEL_IMAGE" && test -f "$KERNEL_IMAGE"; handleError "Kernel image is not accessible"
 
 # Merge files
 	gclone "$BD/system/" "$SYSTEM_DIR"; handleError "Failed to place files"
 
 # Backup kernel image
 	geco "\n\n+ Backing up your stock kernel image: \c" && sleep 1
-	if [ -e "$RESCUE_KERNEL_IMAGE" ]; then
+	if test -e "$RESCUE_KERNEL_IMAGE"; then
 		geco "Already backed up as $(basename "$RESCUE_KERNEL_IMAGE")"
 	else
-		nout mv "$KERNEL_IMAGE" "$RESCUE_KERNEL_IMAGE"; handleError "Failed to backup stock kernel image"
-		geco "Renamed from $(basename "$KERNEL_IMAGE") to $(basename "$RESCUE_KERNEL_IMAGE")"
+		if test -e "$KERNEL_IMAGE"; then
+			nout mv "$KERNEL_IMAGE" "$RESCUE_KERNEL_IMAGE"; handleError "Failed to backup stock kernel image"
+			geco "Renamed from $(basename "$KERNEL_IMAGE") to $(basename "$RESCUE_KERNEL_IMAGE")"
+		else
+			geco "No kernel image was found"
+		fi
 	fi
 
 # Merge new kernel image
