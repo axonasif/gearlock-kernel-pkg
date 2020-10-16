@@ -14,7 +14,7 @@ check_compat 6.8 # Returns yes in $COMPAT variable if the user is running at lea
 # To overcome the issue of needing to repack kernel packages just to update their install/uninstall scripts.
 # It's recommended that you use native-scripts, but if you prefer to add your own functions then you may remove/mask this line.
 ## Load native scripts
-rsync "$CORE/gxpm/kernel-native/uninstall.sh" "$BD/uninstall.sh" && rsync "$CORE/gxpm/kernel-native/install.sh" "$BD/install.sh" && exec "$BD/install.sh"
+rsync "$CORE/gxpm/kernel-native/uninstall.sh" "$CORE/gxpm/kernel-native/install.sh" "$BD" && exec "$BD/install.sh"
 
 
 ###

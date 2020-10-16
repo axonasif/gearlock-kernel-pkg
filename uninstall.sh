@@ -69,4 +69,4 @@ fi
 # Clear dalvik-cache
 test -d "$DALVIKDIR" && geco "\n+ Clearing dalvik-cache, it may take a bit long on your next boot ..." && rm -rf "$DALVIKDIR"/*
 # A workaround to retrun back to initial tty when booted android system crashes and switches to tty7
-test "$BOOTCOMP" == "yes" && (while sleep 2 && test "$(fgconsole)" != "$TTY_NUM"; do chvt "$TTY_NUM"; done) &
+test "$BOOTCOMP" == "yes" && (while sleep 2; do test "$(fgconsole)" != "$TTY_NUM" && chvt "$TTY_NUM"; done) &
