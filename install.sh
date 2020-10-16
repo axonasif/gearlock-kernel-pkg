@@ -4,28 +4,21 @@
 # Check `!zygote.sh` to configure your package functions or gearlock can also guide you during the build process.
 
 
-
-# Since GearLock 6.7.7 I decided to hold a native installation script inside gearlock/core instead.
-# To overcome the issue of needing to repack kernel packages just to update their install/uninstall scripts.
-# It's recommended that you use NATIVE_INSTALL, but if you prefer to add your own functions then you may set it to `false`. 
-NATIVE_INSTALL=true
-
-
 #####--- Import Functions ---#####
 get_base_dir # Returns execution directory path in $BD variable
-check_compat 6.7.7 # Returns yes in $COMPAT variable if the user is running at least 6.7.7 GearLock
+check_compat 6.8 # Returns yes in $COMPAT variable if the user is running at least 6.8 GearLock
 #####--- Import Functions ---#####
 
 
-# Load native scripts (When NATIVE_INSTALL is true)
-if test "$NATIVE_INSTALL" == "true"; then
-	rsync "$CORE/gxpm/kernel-native/uninstall.sh" "$BD/uninstall.sh"
-	rsync "$CORE/gxpm/kernel-native/install.sh" "$BD/install.sh" && exec "$BD/install.sh"
-fi
+# Since GearLock 6.8 I decided to hold native installation scripts inside gearlock/core instead.
+# To overcome the issue of needing to repack kernel packages just to update their install/uninstall scripts.
+# It's recommended that you use native-scripts, but if you prefer to add your own functions then you may remove/mask this line.
+## Load native scripts
+rsync "$CORE/gxpm/kernel-native/uninstall.sh" "$BD/uninstall.sh" && rsync "$CORE/gxpm/kernel-native/install.sh" "$BD/install.sh" && exec "$BD/install.sh"
 
 
 ###
-### Start of un-native installer script (When NATIVE_INSTALL is false)
+### Start of un-native installer script.
 ###
 
 # Define variables
@@ -98,7 +91,7 @@ doJob ()
 {
 
 # Make sure KERNEL_IMAGE exist and is accessible
-	test -n "$KERNEL_IMAGE" && test -f "$KERNEL_IMAGE"; handleError "Kernel image is not accessible"
+	test -n "$KERNEL_IMAGE" && test ! -d "$KERNEL_IMAGE"; handleError "Kernel image is not accessible"
 
 # Merge files
 	gclone "$BD/system/" "$SYSTEM_DIR"; handleError "Failed to place files"
@@ -134,8 +127,8 @@ doJob ()
 
 }
 
-# Do not allow GearLock versions below 6.7.7
-# # if ! check_compat 6.7.7; then geco "+\n Please update GearLock to install this"; exit 101; fi
+# Do not allow GearLock versions below 6.8
+# # if ! check_compat 6.8; then geco "+[!!!] Please update GearLock to install this"; exit 101; fi
 test "$COMPAT" != "yes" && geco "\n[!!!] Please update GearLock to install this" && exit 101
 
 # Warning info for installation from GUI to avoid system crash
@@ -149,7 +142,7 @@ if [ -d "$BD$FIRMDIR" ]; then
 	geco "This kernel package also provides additional firmware."
 	while true
 	do
-		read -n1 -p "$(geco "Do you want to upgrade the ${BLUE}firmware${RC} through this kernel package? [${GREEN}Y${RC}/n]") " i
+		read -rn1 -p "$(geco "Do you want to upgrade the ${BLUE}firmware${RC} through this kernel package? [${GREEN}Y${RC}/n]") " i
 		case $i in
 					
 			[Yy] ) geco "\n\n+ Placing the kernel module and firmware files into your system"
@@ -171,10 +164,8 @@ if [ -d "$BD$FIRMDIR" ]; then
 					
 			[Nn] ) geco "\n\n+ Placing the kernel module files into your system"
 					
-						if [ -f "$GBSCRIPT" ]; then
-							rm "$GBSCRIPT"; handleError "Failed to remove pre-existing kernel updater GearBoot script"
-						fi
-						nout rm -r "${BD}${FIRMDIR}"; handleError "Failed to cleanup package firmware"; doJob; break
+						rm -f "${GBSCRIPT[1]}" "${GBSCRIPT[2]}"
+						rm -rf "${BD}${FIRMDIR}"; handleError "Failed to cleanup package firmware"; doJob; break
 					
 				;;
 					
@@ -185,12 +176,12 @@ if [ -d "$BD$FIRMDIR" ]; then
 		esac
 	done
 else
-	if [ -f "$GBSCRIPT" ]; then nout rm "$GBSCRIPT"; handleError "Failed to remove pre-existing kernel updater GearBoot script"; fi
+	rm -f "${GBSCRIPT[1]}" "${GBSCRIPT[2]}"
 	geco "\n+ Placing the kernel module files into your system" && doJob
 fi
 
 # Clear dalvik-cache
-if test "$TERMINAL_EMULATOR" != "yes" && test -d "$DALVIKDIR"; then
+if test "$TERMINAL_EMULATOR" == "no" && test -d "$DALVIKDIR"; then
 	geco "\n+ Clearing dalvik-cache, it may take a bit long on your next boot" && rm -rf "$DALVIKDIR"/*
 elif test "$TERMINAL_EMULATOR" == "yes" && test -d "$DALVIKDIR"; then
 	make_gbscript_clearDalvik

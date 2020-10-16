@@ -35,7 +35,7 @@ if [ "$TERMINAL_EMULATOR" == "yes" ]; then
 	geco "+ You can still run GearLock in ${PURPLE}TTY${RC} and uninstall from there but it's not recommended.\n"
 	while true
 	do
-		read -n1 -p "$(geco "Do you want to switch to ${BGREEN}TTY${RC} and uninstall from there ? [${GREEN}Y${RC}/n]") " i
+		read -rn1 -p "$(geco "Do you want to switch to ${BGREEN}TTY${RC} and uninstall from there ? [${GREEN}Y${RC}/n]") " i
 		case $i in
 					
 			[Yy] ) geco "\n\n+ Switching to TTY GearLock GXPM ..." && sleep 2
