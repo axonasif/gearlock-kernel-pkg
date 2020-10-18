@@ -9,6 +9,9 @@ get_base_dir # Returns execution directory path in $BD variable
 check_compat 6.8 # Returns yes in $COMPAT variable if the user is running at least 6.8 GearLock
 #####--- Import Functions ---#####
 
+# Do not allow GearLock versions below 6.8
+# if ! check_compat 6.8; then geco "+[!!!] Please update GearLock to install this"; exit 101; fi
+test "$COMPAT" != "yes" && geco "\n[!!!] Please update GearLock to install this" && exit 101
 
 # Since GearLock 6.8 I decided to hold native installation scripts inside gearlock/core instead.
 # To overcome the issue of needing to repack kernel packages just to update their install/uninstall scripts.
@@ -127,9 +130,6 @@ doJob ()
 
 }
 
-# Do not allow GearLock versions below 6.8
-# # if ! check_compat 6.8; then geco "+[!!!] Please update GearLock to install this"; exit 101; fi
-test "$COMPAT" != "yes" && geco "\n[!!!] Please update GearLock to install this" && exit 101
 
 # Warning info for installation from GUI to avoid system crash
 test "$BOOTCOMP" == "yes" && geco "[!!!] You seem to be installing from a live system, best practice is to install from RECOVERY-MODE.\n"
