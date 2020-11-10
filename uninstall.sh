@@ -24,7 +24,7 @@ GBSCRIPT[2]="$GBDIR/init/ClearDalvikForKernelUpdate"
 handleError ()
 { 
 	if [ $? != 0 ]; then
-		geco "[!!!]++++ Error: $1" && exit ${2:-101}
+		geco "\n[!!!] Error: $1" && return ${2:-101}
 	fi
 }
 

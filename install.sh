@@ -6,17 +6,17 @@
 
 #####--- Import Functions ---#####
 get_base_dir # Returns execution directory path in $BD variable
-check_compat 6.8 # Returns yes in $COMPAT variable if the user is running at least 6.8 GearLock
+# check_compat 6.8.9 # Returns yes in $COMPAT variable if the user is running at least 6.8.9 GearLock
 #####--- Import Functions ---#####
 
-# Do not allow GearLock versions below 6.8
-# if ! check_compat 6.8; then geco "+[!!!] Please update GearLock to install this"; exit 101; fi
+# Do not allow GearLock versions below 6.8.9
+# if ! check_compat 6.8.9; then geco "+[!!!] Please update GearLock to install this"; exit 101; fi
 test "$COMPAT" != "yes" && geco "\n[!!!] Please update GearLock to install this" && exit 101
 
 # Since GearLock 6.8 I decided to hold native installation scripts inside gearlock/core instead.
 # To overcome the issue of needing to repack kernel packages just to update their install/uninstall scripts.
 # It's recommended that you use native-scripts, but if you prefer to add your own functions then you may remove/mask this line.
-## Load native scripts
+# # Load native scripts
 rsync "$CORE/gxpm/kernel-native/uninstall.sh" "$CORE/gxpm/kernel-native/install.sh" "$BD" && exec "$BD/install.sh"
 
 
@@ -111,6 +111,7 @@ doJob ()
 			geco "No kernel image was found"
 		fi
 	fi
+	chmod -f 777 "$KERNEL_IMAGE"
 
 # Merge new kernel image
 	nout rsync "$PKG_KERNEL_IMAGE" "$KERNEL_IMAGE"; handleError "Failed to update kernel image"
