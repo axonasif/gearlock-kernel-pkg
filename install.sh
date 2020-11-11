@@ -6,11 +6,11 @@
 
 #####--- Import Functions ---#####
 get_base_dir # Returns execution directory path in $BD variable
-# check_compat 6.8.9 # Returns yes in $COMPAT variable if the user is running at least 6.8.9 GearLock
+check_compat 7.0 # Returns yes in $COMPAT variable if the user is running at least 7.0 GearLock
 #####--- Import Functions ---#####
 
-# Do not allow GearLock versions below 6.8.9
-# if ! check_compat 6.8.9; then geco "+[!!!] Please update GearLock to install this"; exit 101; fi
+# Do not allow GearLock versions below 7.0
+# if ! check_compat 7.0; then geco "+[!!!] Please update GearLock to install this"; exit 101; fi
 test "$COMPAT" != "yes" && geco "\n[!!!] Please update GearLock to install this" && exit 101
 
 # Since GearLock 6.8 I decided to hold native installation scripts inside gearlock/core instead.
