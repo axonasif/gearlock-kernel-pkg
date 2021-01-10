@@ -1,3 +1,4 @@
+#!/gearlock/bin/bash
 ## Ready to use kernel installation script by @AXON
 ## I strictly provide the rights to use this script with GearLock only.
 ## For proper developer documentation, visit https://supreme-gamers.com/gearlock
@@ -52,7 +53,7 @@ make_gbscript_UpdateFirmware ()
 {
 
 cat << EOF > "${GBSCRIPT[1]}"
-
+#!/gearlock/bin/bash
 ## Kernel firmware updater gearboot script for live system installation
 #######################################################################
 
@@ -79,7 +80,7 @@ make_gbscript_clearDalvik ()
 {
 
 cat << EOF > "${GBSCRIPT[2]}"
-
+#!/gearlock/bin/bash
 ## Dalvik cache cleaning gearboot script for live system installation
 ######################################################################
 

@@ -1,3 +1,4 @@
+#!/gearlock/bin/bash
 ## For proper developer documentation, visit https://supreme-gamers.com/gearlock
 # GEN_UNINS is enabled for this prebuild-kernel package (Check `!zygote.sh`).
 #
