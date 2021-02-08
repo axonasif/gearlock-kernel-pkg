@@ -38,7 +38,9 @@ GEN_UNINS="yes" #(Deafult - yes) If you want GearLock to generate a uninstallati
 
 SHOW_PROG="yes" #(Default - yes) Whether to show extraction progress while loading the pkg/extension
 
-DEF_HEADER="yes" #(Default -yes) Whether to use the default header which print's the info during zygote
+DEF_HEADER="yes" #(Default - yes) Whether to use the default header which print's the info during zygote
+
+INTERACTIVE="no" #(Default - no) Whether if your install.sh require inputs from the user other than yes/no
 
 ######=============================== Package/Extension Functions ===============================######
 #######################################################################################################
