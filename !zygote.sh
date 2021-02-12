@@ -40,7 +40,7 @@ SHOW_PROG="yes" #(Default - yes) Whether to show extraction progress while loadi
 
 DEF_HEADER="yes" #(Default - yes) Whether to use the default header which print's the info during zygote
 
-INTERACTIVE="no" #(Default - no) Whether if your install.sh require inputs from the user other than yes/no
+INTERACTIVE="no, no" #(Default - no, no [INSTALL, UNINSTALL]) Additional interactivity in GXPM operation
 
 ######=============================== Package/Extension Functions ===============================######
 #######################################################################################################
