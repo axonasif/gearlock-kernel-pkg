@@ -1,4 +1,4 @@
-## For proper developer documentation, visit https://supreme-gamers.com/gearlock
+## For proper developer documentation, visit https://wiki.supreme-gamers.com/gearlock/developer-guide
 
 # This is a pre-build kernel installer package.
 # For configuring your package, check `!zygote.sh` or gearlock can also guide you during the build process.

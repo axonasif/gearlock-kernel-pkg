@@ -1,5 +1,5 @@
 #!/gearlock/bin/bash
-## For proper developer documentation, visit https://supreme-gamers.com/gearlock
+## For proper developer documentation, visit https://wiki.supreme-gamers.com/gearlock/developer-guide
 # GEN_UNINS is enabled for this prebuild-kernel package (Check `!zygote.sh`).
 #
 # Which will log all the files present inside your package `system` dir

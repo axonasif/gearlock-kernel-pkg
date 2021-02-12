@@ -1,7 +1,7 @@
 #!/gearlock/bin/bash
 ## Ready to use kernel installation script by @AXON
 ## I strictly provide the rights to use this script with GearLock only.
-## For proper developer documentation, visit https://supreme-gamers.com/gearlock
+## For proper developer documentation, visit https://wiki.supreme-gamers.com/gearlock/developer-guide
 # Check `!zygote.sh` to configure your package functions or gearlock can also guide you during the build process.
 
 
